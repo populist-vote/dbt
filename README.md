@@ -1,10 +1,12 @@
-Welcome to your new dbt project!
+## Populist Data Pipeline | DBT
 
-### Using the starter project
+### Setup
+For local setup, you will need a `profiles.yaml` file in your `~/.dbt` directory. This file is not included in the repo for security reasons. You can find an example of here: https://docs.getdbt.com/docs/core/connect-data-platform/connection-profiles
 
-Try running the following commands:
-- dbt run
-- dbt test
+You can use the command `dbt debug` to test your connection.
+
+### Running
+`dbt run` will run all models in the project. You can also run individual models with `dbt run --models <model_name>`
 
 
 ### Resources:
