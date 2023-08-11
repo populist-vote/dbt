@@ -1,4 +1,4 @@
-SELECT DISTINCT ON (office_title, district, municipality, school_district)
+SELECT DISTINCT ON (o.id)
   f.municipality,
   f.school_district,
   f.district,
@@ -8,8 +8,8 @@ SELECT DISTINCT ON (office_title, district, municipality, school_district)
   f.election_scope,
   office_title_raw,
   office_title,
-  o.id,
-  r.id
+  o.id as office_id,
+  r.id as race_id
 FROM {{ ref('mn_local_filings') }} f
 LEFT JOIN
   office AS o
@@ -35,4 +35,4 @@ LEFT JOIN
      LIMIT 1
    )
   
-WHERE o.id IS NULL
+WHERE r.id IS NULL
