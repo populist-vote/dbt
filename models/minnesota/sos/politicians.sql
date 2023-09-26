@@ -4,7 +4,9 @@ SELECT DISTINCT ON (candidate_name)
 		1) as first_name,
 	CASE WHEN split_part(candidate_name,
 		' ',
-		3) = '' THEN
+		3) = '' OR split_part(candidate_name,
+		' ',
+		3) LIKE '%Jr%'  THEN
 		''
 	ELSE
 		split_part(candidate_name,
@@ -13,7 +15,9 @@ SELECT DISTINCT ON (candidate_name)
 	END as middle_name,
 	CASE WHEN split_part(candidate_name,
 		' ',
-		3) = '' THEN
+		3) = '' OR split_part(candidate_name,
+		' ',
+		3) LIKE '%Jr%' THEN
 		split_part(candidate_name,
 			' ',
 			2)
@@ -34,4 +38,20 @@ SELECT DISTINCT ON (candidate_name)
 		'MN' as home_state,
 	campaign_phone as phone,
 	campaign_email as email
-	FROM {{ ref('mn_local_filings')}} WHERE politician_id IS NULL
+	FROM {{ ref('local_filings')}} 
+-- Add this to get only missing politicians	
+-- WHERE politician_id IS NULL
+
+
+-- INSERT INTO politician (first_name, middle_name, last_name, suffix, slug, home_state, phone, email)
+-- SELECT
+-- 	first_name,
+-- 	middle_name,
+-- 	last_name,
+-- 	suffix,
+-- 	slug,
+-- 	home_state::state,
+-- 	phone,
+-- 	email
+-- FROM
+-- 	dbt_wiley.missing_politicians;

@@ -10,7 +10,7 @@ SELECT DISTINCT ON (o.id)
   office_title,
   o.id as office_id,
   r.id as race_id
-FROM {{ ref('mn_local_filings') }} f
+FROM {{ ref('local_filings') }} f
 LEFT JOIN
   office AS o
   ON 
@@ -31,8 +31,9 @@ LEFT JOIN
    ON r.office_id = o.id AND r.election_id = (
      SELECT id
      FROM election
-     WHERE slug = 'mn-general-election-2023'
+     WHERE slug = 'general-election-2023'
      LIMIT 1
    )
-  
-WHERE r.id IS NULL
+
+-- Add this to get only missing races
+-- WHERE r.id IS NULL

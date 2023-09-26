@@ -9,7 +9,7 @@ SELECT DISTINCT ON (office_title, district, municipality, school_district)
   office_title_raw,
   office_title,
   o.id
-FROM {{ ref('mn_local_filings') }} f
+FROM {{ ref('local_filings') }} f
 LEFT JOIN
   office AS o
   ON 
@@ -26,4 +26,19 @@ LEFT JOIN
   OR o.slug
   = SLUGIFY(CONCAT(office_title, ' ', f.municipality, ' ', 'mn', ' ', f.district, ' ', f.school_district))
   
-WHERE o.id IS NULL
+-- Add this to get only missing offices
+-- WHERE o.id IS NULL
+
+-- Use the following insert statement to create these missing offices;
+
+-- INSERT INTO office (title, name, slug, municipality, school_district, district, district_type, election_scope, political_scope)
+-- SELECT
+-- 	  office_title,
+-- 		office_title,
+-- 		SLUGIFY(CONCAT(office_title, ' ', municipality, ' ', 'mn', ' ', district, ' ', school_district)),
+-- 		municipality,
+-- 		school_district,
+-- 		district,
+-- 		district_type::district_type,
+-- 		election_scope::election_scope,
+-- 		'state'::political_scope FROM dbt_wiley.missing_offices

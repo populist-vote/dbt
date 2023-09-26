@@ -7,6 +7,7 @@ SELECT DISTINCT ON (f.candidate_name)
   p.last_name,
   f.campaign_phone,
   f.campaign_email,
+  o.id AS office_id,
   CASE
     WHEN f.office_title ILIKE '%Council Member%'
       THEN
@@ -31,10 +32,12 @@ SELECT DISTINCT ON (f.candidate_name)
     'District ',
     ''
   ) AS district,
-  SUBSTRING(f.office_title, 'ISD #[0-9]{2,4}|SSD #[0-9]{1,4}')
-    AS school_district,
+  school_district_number AS school_district,
   REPLACE(SUBSTRING(f.office_title, 'Elect [0-9]{1,3}'), 'Elect ', '')
     AS num_elect,
+  -- Determine election scope based on office title and other metadata
+  -- Need to make this more general for other data inputs
+  -- TODO: Create a macro for this
   CASE
     WHEN f.office_title ILIKE '%Council Member%' OR f.office_title ILIKE '%Mayor%'
       THEN 'city'
@@ -56,5 +59,20 @@ LEFT JOIN politician AS p
   OR REGEXP_REPLACE(f.campaign_phone, '[^0-9]+', '', 'g')
   = REGEXP_REPLACE(p.phone, '[^0-9]+', '', 'g')
   AND p.home_state = 'MN'
+LEFT JOIN
+  office AS o
+  ON 
+    o.title = office_title AND o.state = 'MN'
+    AND (o.municipality = SUBSTRING(office_title, '\(([^0-9]*)\)')
+    OR o.district
+    = REPLACE(
+      SUBSTRING(office_title, 'Ward [0-9]{1,3} | District [0-9]{1,3}'),
+      'District ',
+      ''
+    )
+    OR o.school_district
+    = SUBSTRING(office_title, 'ISD #[0-9]{2,4}|SSD #[0-9]{1,4}'))
+  OR o.slug
+  = SLUGIFY(CONCAT(office_title, ' ', municipality, ' ', 'mn', ' ', district, ' ', school_district))
 ORDER BY f.candidate_name
 
