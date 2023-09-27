@@ -21,6 +21,20 @@ SELECT DISTINCT ON (f.candidate_name)
     ELSE
       f.office_title
   END AS office_title,
+  
+  -- OFFICE NOTES
+  --
+  -- title = what the person in office would be called, e.g. "Senator"
+  -- name = name of the office, e.g. "U.S. Senate"
+  -- political_scope = local, state, or federal
+  -- election_scope = city, county, state, national, district
+  -- district_type = the type of district, used to determine which field is referenced for the district
+  --
+  -- office subtitle rules
+  --   if election_scope == state, then subtitle = state (full)
+  --   if election_scope == 
+  --   
+
   COALESCE(
     f.office_title ILIKE '%Special Election%',
     FALSE
@@ -52,6 +66,7 @@ SELECT DISTINCT ON (f.candidate_name)
   REGEXP_REPLACE(p.phone, '[^0-9]+', '', 'g') AS p_phone
 FROM
   p6t_state_mn.mn_candidate_filings_local_2023 AS f
+-- Join politicians that already exist in our database using a slugified full name and phone lookup
 LEFT JOIN politician AS p
   ON p.slug = SLUGIFY(
     f.candidate_name
@@ -59,6 +74,7 @@ LEFT JOIN politician AS p
   OR REGEXP_REPLACE(f.campaign_phone, '[^0-9]+', '', 'g')
   = REGEXP_REPLACE(p.phone, '[^0-9]+', '', 'g')
   AND p.home_state = 'MN'
+-- Join populist offices using an office title and municipality/district/school district OR slug comparison
 LEFT JOIN
   office AS o
   ON 
