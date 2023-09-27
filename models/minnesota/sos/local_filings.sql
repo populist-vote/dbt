@@ -32,6 +32,10 @@ SELECT DISTINCT ON (f.candidate_name)
   -- election_scope = city, county, state, national, district
   -- district_type = the type of district, used to determine which field is referenced for the district
   -- district = the district name (e.g. 2, 3B, Ward 5)
+  -- school_district = a field specifically for school districts (e.g. ISD #761)
+  -- hospital_district = a field specifically for hospital districts
+  -- soil_and_water_district = a field specifically for soil and water districts
+  -- seat = sometimes offices will have multiple specific seats
   
   -- HOW TO BUILD OFFICE SUBTITLES
   --
@@ -66,7 +70,11 @@ SELECT DISTINCT ON (f.candidate_name)
   --    subtitle = state abbv + " - " school_district (e.g. "MN - ISD #861")
   --  if (political_scope == local && election_scope == district && district_type == school && district != null)
   --    subtitle = state abbv + " - " school_district + " - District " + district (e.g. "MN - ISD #728 - District 1")
-  --  SEAT STUFF needed
+  --
+  --  SEATS
+  --
+  --  if seat != NULL
+  --    add the seat to the end of the subtitle like " - Seat " + seat (e.g. "Zumbro Township, MN - Seat 2")
   --
   --  MORE TO COME
 
