@@ -29,11 +29,23 @@ SELECT DISTINCT ON (f.candidate_name)
   -- political_scope = local, state, or federal
   -- election_scope = city, county, state, national, district
   -- district_type = the type of district, used to determine which field is referenced for the district
+  -- district = the district name (e.g. 2, 3B, Ward 5)
   --
   -- office subtitle rules
-  --   if election_scope == state, then subtitle = state (full)
-  --   if election_scope == 
-  --   
+  --  if (election_scope == state)
+  --    subtitle = state (full, e.g. "Minnesota")
+  --  if (political_scope == federal && election_scope == district)
+  --    subtitle = state abbv + " - District " + district (e.g. "MN - District 6")
+  --  if (political_scope == state && election_scope == district && district_type == state_house)
+  --    subtitle = state abbv + " - House District " + district (e.g. "MN - House District 3B")
+  --  if (political_scope == state && election_scope == district && district_type == state_senate)
+  --    subtitle = state abbv + " - Senate District " + district (e.g. "MN - Senate District 30")
+  --  if (political_scope == local && election_scope == city)
+  --    subtitle = municipality + ", " + state abbv (e.g. "St. Louis, MN")
+  --  if (political_scope == local && election_scope == district && district_type == city)
+  --    subtitle = municipality + ", " + state abbv + " - " + district (e.g. "St. Louis, MN - Ward 3")
+  --
+  --  MORE TO COME
 
   COALESCE(
     f.office_title ILIKE '%Special Election%',
