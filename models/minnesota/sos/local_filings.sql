@@ -22,17 +22,22 @@ SELECT DISTINCT ON (f.candidate_name)
       f.office_title
   END AS office_title,
   
+  -- ----------------------------------
   -- OFFICE NOTES
-  --
+  -- ----------------------------------
+
   -- title = what the person in office would be called, e.g. "Senator"
   -- name = name of the office, e.g. "U.S. Senate"
   -- political_scope = local, state, or federal
   -- election_scope = city, county, state, national, district
   -- district_type = the type of district, used to determine which field is referenced for the district
   -- district = the district name (e.g. 2, 3B, Ward 5)
+  
+  -- HOW TO BUILD OFFICE SUBTITLES
   --
-  -- office subtitle rules
-  --  if (election_scope == state)
+  --  FEDERAL AND STATE OFFICES
+  --
+  --  if ((political_scope == federal OR political_scope == state) && election_scope == state)
   --    subtitle = state (full, e.g. "Minnesota")
   --  if (political_scope == federal && election_scope == district)
   --    subtitle = state abbv + " - District " + district (e.g. "MN - District 6")
@@ -40,10 +45,28 @@ SELECT DISTINCT ON (f.candidate_name)
   --    subtitle = state abbv + " - House District " + district (e.g. "MN - House District 3B")
   --  if (political_scope == state && election_scope == district && district_type == state_senate)
   --    subtitle = state abbv + " - Senate District " + district (e.g. "MN - Senate District 30")
+  --
+  --  MUNICIPAL OFFICES
+  --
   --  if (political_scope == local && election_scope == city)
   --    subtitle = municipality + ", " + state abbv (e.g. "St. Louis, MN")
   --  if (political_scope == local && election_scope == district && district_type == city)
   --    subtitle = municipality + ", " + state abbv + " - " + district (e.g. "St. Louis, MN - Ward 3")
+  --
+  --  COUNTY OFFICES
+  --
+  --  if (political_scope == local && election_scope == county)
+  --    subtitle = county + " County," + state abbv (e.g. "Pine County, MN")
+  --  if (political_scope == local && election_scope == district && district_type == county)
+  --    subtitle = county + " County," + state abbv + " - District " + district (e.g. "Pine County, MN - District 1")  
+  --
+  --  SCHOOL DISTRICTS
+  --  
+  --  if (political_scope == local && election_scope == district && district_type == school)
+  --    subtitle = state abbv + " - " school_district (e.g. "MN - ISD #861")
+  --  if (political_scope == local && election_scope == district && district_type == school && district != null)
+  --    subtitle = state abbv + " - " school_district + " - District " + district (e.g. "MN - ISD #728 - District 1")
+  --  SEAT STUFF needed
   --
   --  MORE TO COME
 
