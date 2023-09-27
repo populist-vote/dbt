@@ -71,6 +71,11 @@ SELECT DISTINCT ON (f.candidate_name)
   --  if (political_scope == local && election_scope == district && district_type == school && district != null)
   --    subtitle = state abbv + " - " school_district + " - District " + district (e.g. "MN - ISD #728 - District 1")
   --
+  --  JUDGES
+  --
+  --  if (political_scope == local && election_scope == district && district_type == judicial)
+  --    subtitle = state abbv + " - District " district (e.g. "MN - District 2")
+  --
   --  SEATS
   --
   --  if seat != NULL
