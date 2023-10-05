@@ -1,0 +1,1 @@
+SELECT first_name, middle_name, last_name, suffix, preferred_name, campaign_phone, campaign_email FROM {{ ref('mn_sos_local_filings')}}
