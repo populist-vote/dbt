@@ -1,6 +1,5 @@
 SELECT DISTINCT ON (f.candidate_name)
   -- Split candidate name into first, middle, last, and suffix
-  
   split_part(candidate_name,' ',1) First_Name,
   case when split_part(candidate_name,' ',3) ='' then '' else split_part(candidate_name,' ',2) end middle_name,
   case when split_part(candidate_name,' ',3) ='' then split_part(candidate_name,' ',2) else split_part(candidate_name,' ',3) end last_name,
@@ -12,6 +11,17 @@ SELECT DISTINCT ON (f.candidate_name)
   f.campaign_phone,
   f.campaign_email,
   o.id AS office_id,
+  r.id AS race_id,
+  f.office_code as state_id,
+  slugify(f.office_title) AS office_ref_key,
+  slugify(f.candidate_name) AS politician_ref_key,
+  'MN' as office_state,
+  CASE 
+    WHEN f.office_title ILIKE '%Primary%'
+      THEN 'primary'
+    ELSE
+      'general'
+  END AS race_type,
   CASE
     WHEN f.office_title ILIKE '%Council Member%'
       THEN
@@ -39,11 +49,11 @@ SELECT DISTINCT ON (f.candidate_name)
   school_district_number AS school_district,
   REPLACE(SUBSTRING(f.office_title, 'Elect [0-9]{1,3}'), 'Elect ', '')
     AS num_elect,
+  'local' AS political_scope,
   -- Determine election scope based on office title and other metadata
   -- Need to make this more general for other data inputs
   -- TODO: Create a macro for this
-  CASE WHEN f.office_title ILIKE '%School%' THEN 'school'
-    WHEN f.office_title ILIKE '%Council Member%' OR f.office_title ILIKE '%Mayor%'
+  CASE WHEN f.office_title ILIKE '%Council Member%' OR f.office_title ILIKE '%Mayor%'
       THEN 'city'
     ELSE 'district'
   END AS election_scope,
@@ -67,6 +77,9 @@ LEFT JOIN politician AS p
 -- Join populist offices using an office title and municipality/district/school district OR slug comparison
 LEFT JOIN
   office AS o
-  ON o.slug = SLUGIFY(CONCAT(office_title, ' ', municipality, ' ', 'mn', ' ', district, ' ', school_district))
+  ON o.state_id = f.office_code 
+LEFT JOIN 
+  race AS r
+  ON r.office_id = o.id
 ORDER BY f.candidate_name
 
