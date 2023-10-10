@@ -1,6 +1,6 @@
-SELECT DISTINCT ON(office_ref_key)
+SELECT DISTINCT ON(slugify (CONCAT(office_state, ' ', office_title, ' ', seat , ' ', district , ' ', school_district, ' ', municipality, ' ', seat)))
     office_id AS id,
-	office_ref_key AS ref_key,
+	slugify (CONCAT(office_state, ' ', office_title, ' ', seat , ' ', district , ' ', school_district, ' ', municipality, ' ', seat)) AS ref_key,
 	slugify (CONCAT(office_state, ' ', office_title, ' ', seat , ' ', district , ' ', school_district, ' ', municipality, ' ', seat)) as slug, 
     office_state::state AS state,
     state_id,

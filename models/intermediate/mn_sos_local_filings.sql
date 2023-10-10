@@ -13,9 +13,13 @@ SELECT DISTINCT ON (f.candidate_name)
   o.id AS office_id,
   r.id AS race_id,
   f.office_code as state_id,
+  REGEXP_REPLACE(office_title, '([^ ]+ Choice)', '') AS office_title_raw_no_choice,
   slugify(f.office_title) AS office_ref_key,
   slugify(f.candidate_name) AS politician_ref_key,
   'MN' as office_state,
+  CASE WHEN f.office_title ILIKE '%Choice%' THEN 'true'
+    ELSE false
+  END AS is_ranked_choice,
   CASE 
     WHEN f.office_title ILIKE '%Primary%'
       THEN 'primary'
@@ -32,6 +36,9 @@ SELECT DISTINCT ON (f.candidate_name)
     WHEN f.office_title ILIKE '%School Board%'
       THEN
         'School Board'
+    WHEN f.office_title ILIKE '%Town Supervisor%'
+      THEN
+        'Town Supervisor'
     ELSE
       f.office_title
   END AS office_title,
@@ -39,8 +46,11 @@ SELECT DISTINCT ON (f.candidate_name)
     f.office_title ILIKE '%Special Election%',
     FALSE
   ) AS is_special_election,
-  CASE WHEN f.office_title ILIKE '%At Large%' THEN 'At Large' END
-    AS seat,
+  CASE WHEN f.office_title ILIKE '%At Large%' THEN 'At Large'
+    WHEN f.office_title ILIKE '%Seat%' THEN 
+    SUBSTRING(f.office_title, 'Seat ([A-Za-z0-9]+)')
+    ELSE NULL
+  END AS seat,
   REPLACE(
     SUBSTRING(f.office_title, 'Ward [0-9]{1,3} | District [0-9]{1,3}'),
     'District ',
@@ -74,12 +84,10 @@ LEFT JOIN politician AS p
   OR REGEXP_REPLACE(f.campaign_phone, '[^0-9]+', '', 'g')
   = REGEXP_REPLACE(p.phone, '[^0-9]+', '', 'g')
   AND p.home_state = 'MN'
--- Join populist offices using an office title and municipality/district/school district OR slug comparison
 LEFT JOIN
   office AS o
-  ON o.state_id = f.office_code 
+  ON o.state_id = f.office_code
 LEFT JOIN 
   race AS r
   ON r.office_id = o.id
 ORDER BY f.candidate_name
-
