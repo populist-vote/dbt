@@ -15,8 +15,18 @@ FROM
 	{{ ref('mn_sos_county_filings') }}
 
 
--- INSERT INTO office (ref_key, slug, state, state_id, title, seat, district, school_district, political_scope, election_scope, district_type, municipality) (
--- 	SELECT
--- 		ref_key, slug, state, state_id, title, seat, district, school_district, political_scope, election_scope, district_type, municipality
--- 	FROM
--- 		dbt_wiley.stg_offices
+-- INSERT INTO office (ref_key, slug, state, state_id, title, seat, district, political_scope, election_scope, district_type, county)
+-- SELECT
+-- 	ref_key,
+-- 	slug,
+-- 	state,
+-- 	state_id,
+-- 	title,
+-- 	seat,
+-- 	district,
+-- 	political_scope,
+-- 	election_scope,
+-- 	district_type,
+-- 	county
+-- FROM
+-- 	dbt_models.stg_mn_sos_county_offices;

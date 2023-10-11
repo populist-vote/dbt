@@ -39,7 +39,7 @@ WITH transformed_filings AS (
 		CASE WHEN candidate_name ~ '.*".*' THEN
 			substring(candidate_name FROM '.*"(.*)".*')
 		ELSE
-			''
+			NULL
 		END preferred_name,
 		slugify (candidate_name) AS slug,
 		CASE WHEN f.office_title ILIKE '%Choice%' THEN
@@ -100,7 +100,6 @@ WITH transformed_filings AS (
 		campaign_email AS email,
         county_id,
         vd.countyname AS county
-		
 	FROM
 		p6t_state_mn.mn_candidate_filings_county_2023 AS f
     LEFT JOIN p6t_state_mn.bdry_votingdistricts AS vd ON vd.countycode = f.county_id

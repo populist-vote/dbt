@@ -40,7 +40,7 @@ WITH transformed_filings AS (
 		CASE WHEN candidate_name ~ '.*".*' THEN
 			substring(candidate_name FROM '.*"(.*)".*')
 		ELSE
-			''
+			NULL
 		END preferred_name,
 		slugify (candidate_name) AS slug,
 		CASE WHEN f.office_title ILIKE '%Choice%' THEN
@@ -78,7 +78,7 @@ WITH transformed_filings AS (
 				'Ward [0-9]{1,3} | District [0-9]{1,3}'),
 			'District ',
 			'') AS district,
-		school_district_number AS school_district,
+		CONCAT('ISD #', school_district_number) AS school_district,
 		REPLACE(SUBSTRING(f.office_title,
 				'Elect [0-9]{1,3}'),
 			'Elect ',
@@ -152,3 +152,5 @@ FROM
 	LEFT JOIN politician AS p ON p.slug = f.slug
     LEFT JOIN office AS o ON o.slug = slugify(CONCAT('MN', ' ', f.office_title, ' ', f.municipality,  ' ', f.district , ' ', f.school_district, ' ', f.seat))
     LEFT JOIN race AS r ON r.office_id = o.id
+
+
