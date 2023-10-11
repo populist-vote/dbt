@@ -1,8 +1,7 @@
 WITH transformed_filings AS (
 	SELECT
         office_title AS office_title_raw,
-        REGEXP_REPLACE(office_title, '([^ ]+ Choice)', '') AS office_title_raw_no_choice,
-		office_code AS state_id,
+		office_id AS state_id,
 		candidate_name,
 		-- Split candidate name into first, middle, last, and suffix
 		split_part(candidate_name,
@@ -61,6 +60,8 @@ WITH transformed_filings AS (
 			'School Board'
 		WHEN f.office_title ILIKE '%Town Supervisor%' THEN
 			'Town Supervisor'
+        WHEN f.office_title ILIKE '%County Commissioner%' THEN
+            'County Commissioner'
 		ELSE
 			f.office_title
 		END AS office_title,
@@ -78,7 +79,6 @@ WITH transformed_filings AS (
 				'Ward [0-9]{1,3} | District [0-9]{1,3}'),
 			'District ',
 			'') AS district,
-		school_district_number AS school_district,
 		REPLACE(SUBSTRING(f.office_title,
 				'Elect [0-9]{1,3}'),
 			'Elect ',
@@ -93,30 +93,29 @@ WITH transformed_filings AS (
 		ELSE
 			'district'
 		END AS election_scope,
-		CASE WHEN f.office_title ILIKE '%School%' THEN
-			'school'
-		ELSE
-			'city'
-		END AS district_type,
+		'county' AS district_type,
 		SUBSTRING(f.office_title,
-			'\(([^0-9]*)\)') AS municipality,
+			'\(([^0-9]*)\)') AS race_description,
 		campaign_phone AS phone,
-		campaign_email AS email
+		campaign_email AS email,
+        county_id,
+        vd.countyname AS county
 		
 	FROM
-		p6t_state_mn.mn_candidate_filings_local_2023 AS f
+		p6t_state_mn.mn_candidate_filings_county_2023 AS f
+    LEFT JOIN p6t_state_mn.bdry_votingdistricts AS vd ON vd.countycode = f.county_id
 	GROUP BY
 		f.office_title,
 		f.candidate_name,
-        f.school_district_number,
-		f.office_code,
+		f.office_id,
+        f.county_id,
 		f.campaign_phone,
-		f.campaign_email
+		f.campaign_email,
+        vd.countyname
 )
 SELECT
 	office_title,
 	office_title_raw,
-	office_title_raw_no_choice,
 	f.state_id,
 	f.first_name,
 	f.middle_name,
@@ -129,7 +128,7 @@ SELECT
 	r.id as race_id,
 	f.is_special_election,
 	f.num_elect,
-
+    county_id,
 	is_ranked_choice,
 	p.slug,
     REGEXP_REPLACE(f.phone,
@@ -140,15 +139,15 @@ SELECT
 	'MN' AS state,
 	f.seat,
 	f.district,
-	f.school_district,
 	f.political_scope,
 	f.election_scope,
 	f.district_type,
-	f.municipality,
-    slugify(CONCAT('MN', ' ', f.office_title, ' ', f.municipality,  ' ', f.district , ' ', f.school_district, ' ', f.seat)) AS office_slug,
-	slugify(candidate_name) AS politician_slug
+    slugify(CONCAT('MN', ' ', f.office_title, ' ', f.county,  ' ', f.district , ' ', f.seat)) AS office_slug,
+	slugify(candidate_name) AS politician_slug,
+    f.county,
+    race_description
 FROM
 	transformed_filings f
 	LEFT JOIN politician AS p ON p.slug = f.slug
-    LEFT JOIN office AS o ON o.slug = slugify(CONCAT('MN', ' ', f.office_title, ' ', f.municipality,  ' ', f.district , ' ', f.school_district, ' ', f.seat))
+    LEFT JOIN office AS o ON o.slug = slugify(CONCAT('MN', ' ', f.office_title, ' ', f.county,  ' ', f.district , ' ', f.seat))
     LEFT JOIN race AS r ON r.office_id = o.id
