@@ -52,19 +52,16 @@ WITH transformed_filings AS (
 		ELSE
 			'general'
 		END AS race_type,
-		CASE WHEN f.office_title ILIKE '%Council Member%' THEN
-			'City Council'
-		WHEN f.office_title ILIKE '%Mayor%' THEN
-			'Mayor'
-		WHEN f.office_title ILIKE '%School Board%' THEN
-			'School Board'
-		WHEN f.office_title ILIKE '%Town Supervisor%' THEN
-			'Town Supervisor'
-        WHEN f.office_title ILIKE '%County Commissioner%' THEN
+		CASE WHEN f.office_title ILIKE '%County Commissioner%' THEN
             'County Commissioner'
 		ELSE
 			f.office_title
 		END AS office_title,
+		CASE WHEN f.office_title ILIKE '%County Commissioner%' THEN
+            'County Commissioner'
+		ELSE
+			f.office_title
+		END AS office_name,
 		COALESCE(f.office_title ILIKE '%Special Election%',
 			FALSE) AS is_special_election,
 		CASE WHEN f.office_title ILIKE '%At Large%' THEN
