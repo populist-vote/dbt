@@ -11,13 +11,14 @@ SELECT DISTINCT ON(office_slug)
     political_scope::political_scope,
 	election_scope::election_scope,
 	district_type::district_type,
-	municipality
+	municipality,
+	county
 FROM
 	{{ ref('mn_sos_local_filings') }}
 
 
--- INSERT INTO office (ref_key, slug, state, state_id, title, seat, district, school_district, political_scope, election_scope, district_type, municipality) (
+-- INSERT INTO office (ref_key, slug, state, state_id, title, seat, district, school_district, political_scope, election_scope, district_type, municipality, county) (
 -- 	SELECT
--- 		ref_key, slug, state, state_id, title, seat, district, school_district, political_scope, election_scope, district_type, municipality
+-- 		ref_key, slug, state, state_id, title, seat, district, school_district, political_scope, election_scope, district_type, municipality, county
 -- 	FROM
 -- 		dbt_wiley.stg_offices

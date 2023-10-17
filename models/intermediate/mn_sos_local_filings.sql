@@ -112,17 +112,21 @@ WITH transformed_filings AS (
 		SUBSTRING(f.office_title,
 			'\(([^0-9]*)\)') AS municipality,
 		campaign_phone AS phone,
-		campaign_email AS email
-		
+		campaign_email AS email,
+		county_id,
+		vd.countyname AS county
 	FROM
-		p6t_state_mn.mn_candidate_filings_local_2023 AS f
+		{{ ref("src_mn_sos_candidate_filings_local_2023") }} AS f
+	LEFT JOIN p6t_state_mn.bdry_votingdistricts AS vd ON vd.countycode = f.county_id
 	GROUP BY
 		f.office_title,
 		f.candidate_name,
         f.school_district_number,
 		f.office_code,
 		f.campaign_phone,
-		f.campaign_email
+		f.campaign_email,
+		f.county_id,
+		vd.countyname
 )
 SELECT
 	office_title,
@@ -140,7 +144,7 @@ SELECT
 	r.id as race_id,
 	f.is_special_election,
 	f.num_elect,
-
+	f.county,
 	is_ranked_choice,
 	p.slug,
     REGEXP_REPLACE(f.phone,
