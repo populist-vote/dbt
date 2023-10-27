@@ -1,13 +1,27 @@
 SELECT DISTINCT ON (office_id)
-	office_title_raw AS title,
-	slugify (CONCAT('mn', ' ', office_title, ' ', county, ' ', district, ' ', '2023', ' ', CASE WHEN race_type = 'primary' THEN 'primary' ELSE '' END)) AS slug,
-	office_id::uuid,
-	race_type::race_type,
-	state::state,
-	is_special_election,
-	num_elect::integer
+    office_title_raw AS title,
+    office_id::uuid,
+    race_type::race_type,
+    state::state,
+    is_special_election,
+    num_elect::integer,
+    slugify(
+        concat(
+            'mn',
+            ' ',
+            office_title,
+            ' ',
+            county,
+            ' ',
+            district,
+            ' ',
+            '2023',
+            ' ',
+            CASE WHEN race_type = 'primary' THEN 'primary' ELSE '' END
+        )
+    ) AS slug
 FROM
-	{{ ref('mn_sos_county_filings') }}
+    {{ ref('mn_sos_county_filings') }}
 
 
 -- INSERT INTO politician (ref_key, slug, first_name, middle_name, last_name, suffix, preferred_name, phone, email, home_state) 
