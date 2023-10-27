@@ -1,26 +1,26 @@
 WITH transformed_filings AS (
     SELECT
         office_title AS office_title_raw,
-        office_code AS state_id,
-        candidate_name,
+        f.office_code AS state_id,
+        f.candidate_name,
         'local' AS political_scope,
         -- Split candidate name into first, middle, last, and suffix
-        campaign_phone AS phone,
-        campaign_email AS email,
-        county_id,
+        f.campaign_phone AS phone,
+        f.campaign_email AS email,
+        f.county_id,
         vd.countyname AS county,
         REGEXP_REPLACE(
             office_title, '([^ ]+ Choice)', ''
         ) AS office_title_raw_no_choice,
         SPLIT_PART(
-            candidate_name,
+            f.candidate_name,
             ' ',
             1
         ) AS first_name,
         CASE
             WHEN
                 SPLIT_PART(
-                    candidate_name,
+                    f.candidate_name,
                     ' ',
                     3
                 ) = ''
@@ -28,7 +28,7 @@ WITH transformed_filings AS (
                     ''
             ELSE
                 SPLIT_PART(
-                    candidate_name,
+                    f.candidate_name,
                     ' ',
                     2
                 )
@@ -36,19 +36,19 @@ WITH transformed_filings AS (
         CASE
             WHEN
                 SPLIT_PART(
-                    candidate_name,
+                    f.candidate_name,
                     ' ',
                     3
                 ) = ''
                 THEN
                     SPLIT_PART(
-                        candidate_name,
+                        f.candidate_name,
                         ' ',
                         2
                     )
             ELSE
                 SPLIT_PART(
-                    candidate_name,
+                    f.candidate_name,
                     ' ',
                     3
                 )
@@ -56,7 +56,7 @@ WITH transformed_filings AS (
         CASE
             WHEN
                 SPLIT_PART(
-                    candidate_name,
+                    f.candidate_name,
                     ' ',
                     4
                 ) = ''
@@ -64,16 +64,16 @@ WITH transformed_filings AS (
                     ''
             ELSE
                 SPLIT_PART(
-                    candidate_name,
+                    f.candidate_name,
                     ' ',
                     4
                 )
         END AS suffix,
         CASE
-            WHEN candidate_name ~ '.*".*' THEN
-                SUBSTRING(candidate_name FROM '.*"(.*)".*')
+            WHEN f.candidate_name ~ '.*".*' THEN
+                SUBSTRING(f.candidate_name FROM '.*"(.*)".*')
         END AS preferred_name,
-        SLUGIFY(candidate_name) AS slug,
+        SLUGIFY(f.candidate_name) AS slug,
         CASE
             WHEN f.office_title ILIKE '%Choice%'
                 THEN
@@ -144,7 +144,7 @@ WITH transformed_filings AS (
         ),
         'District ',
         '') AS district,
-        CONCAT('ISD #', school_district_number) AS school_district,
+        CONCAT('ISD #', f.school_district_number) AS school_district,
         REPLACE(SUBSTRING(
             f.office_title,
             'Elect [0-9]{1,3}'
@@ -188,9 +188,9 @@ WITH transformed_filings AS (
 )
 
 SELECT
-    office_title,
-    office_title_raw,
-    office_title_raw_no_choice,
+    f.office_title,
+    f.office_title_raw,
+    f.office_title_raw_no_choice,
     f.state_id,
     f.first_name,
     f.middle_name,
@@ -204,7 +204,7 @@ SELECT
     f.is_special_election,
     f.num_elect,
     f.county,
-    is_ranked_choice,
+    f.is_ranked_choice,
     p.slug,
     f.email,
     'MN' AS state,
@@ -236,7 +236,7 @@ SELECT
             f.seat
         )
     ) AS office_slug,
-    SLUGIFY(candidate_name) AS politician_slug
+    SLUGIFY(f.candidate_name) AS politician_slug
 FROM
     transformed_filings AS f
 LEFT JOIN politician AS p ON p.slug = f.slug

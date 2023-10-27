@@ -14,7 +14,27 @@ FROM
     {{ ref ('mn_sos_county_filings') }}
 
 
--- INSERT INTO politician (ref_key, slug, first_name, middle_name, last_name, suffix, preferred_name, phone, email, home_state) 
--- 	SELECT
--- 		ref_key, slug, first_name, middle_name, last_name, suffix, preferred_name, phone, email, home_state	
--- 	FROM dbt_wiley.stg_mn_sos_county_politicians WHERE id IS null;
+{# INSERT INTO politician (
+    ref_key,
+    slug,
+    first_name,
+    middle_name,
+    last_name,
+    suffix,
+    preferred_name,
+    phone,
+    email,
+    home_state
+)
+SELECT
+    ref_key,
+    slug,
+    first_name,
+    middle_name,
+    last_name,
+    suffix,
+    preferred_name,
+    phone,
+    email,
+    home_state
+FROM dbt_wiley.stg_mn_sos_county_politicians WHERE id IS NULL; #}

@@ -14,7 +14,27 @@ FROM
     {{ ref ('mn_sos_local_filings') }}
 
 
---  INSERT INTO politician (ref_key, slug, first_name, middle_name, last_name, suffix, preferred_name, phone, email, home_state) (
--- 	SELECT
--- 		ref_key, slug, first_name, middle_name, last_name, suffix, preferred_name, phone, email, home_state	
--- 	FROM dbt_models.stg_politicians
+{# INSERT INTO politician (
+    ref_key,
+    slug,
+    first_name,
+    middle_name,
+    last_name,
+    suffix,
+    preferred_name,
+    phone,
+    email,
+    home_state
+)
+SELECT
+    ref_key,
+    slug,
+    first_name,
+    middle_name,
+    last_name,
+    suffix,
+    preferred_name,
+    phone,
+    email,
+    home_state
+FROM dbt_models.stg_politicians #}

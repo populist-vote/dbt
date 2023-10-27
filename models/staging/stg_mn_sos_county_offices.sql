@@ -14,18 +14,30 @@ SELECT DISTINCT ON (office_slug)
 FROM
     {{ ref('mn_sos_county_filings') }}
 
--- INSERT INTO office (ref_key, slug, state, state_id, title, seat, district, political_scope, election_scope, district_type, county)
--- SELECT
--- 	ref_key,
--- 	slug,
--- 	state,
--- 	state_id,
--- 	title,
--- 	seat,
--- 	district,
--- 	political_scope,
--- 	election_scope,
--- 	district_type,
--- 	county
--- FROM
--- 	dbt_models.stg_mn_sos_county_offices;
+{# INSERT INTO office (
+    ref_key,
+    slug,
+    state,
+    state_id,
+    title,
+    seat,
+    district,
+    political_scope,
+    election_scope,
+    district_type,
+    county
+)
+SELECT
+    ref_key,
+    slug,
+    state,
+    state_id,
+    title,
+    seat,
+    district,
+    political_scope,
+    election_scope,
+    district_type,
+    county
+FROM
+    dbt_models.stg_mn_sos_county_offices; #}
