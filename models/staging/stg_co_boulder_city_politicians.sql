@@ -1,15 +1,11 @@
 SELECT DISTINCT ON (politician_slug)
-    politician_id as id,
+    --politician_id as id,
     politician_slug as ref_key,
     politician_slug as slug,
 	first_name,
-	middle_name,
 	last_name,
-	suffix,
-	preferred_name,
-	phone,
 	email,
-    state::state AS home_state
+    home_state
 FROM
 	{{ ref ('co_boulder_city_filings') }}
 
