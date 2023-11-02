@@ -5,7 +5,6 @@ SELECT DISTINCT ON (office_slug)
     office_title AS title,
     seat,
     district,
-    school_district,
     political_scope AS political_scope,
     election_scope AS election_scope,
     district_type AS district_type,

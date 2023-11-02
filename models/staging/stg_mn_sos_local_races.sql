@@ -7,4 +7,4 @@ SELECT DISTINCT ON (office_id)
     num_elect::integer,
     slugify(concat(office_title_raw_no_choice, ' ', '2023')) AS slug
 FROM
-    {{ ref('mn_sos_local_filings') }};
+    {{ ref('mn_sos_local_filings') }}
