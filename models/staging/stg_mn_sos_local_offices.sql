@@ -15,36 +15,3 @@ SELECT DISTINCT ON (office_slug)
     county
 FROM
     {{ ref('mn_sos_local_filings') }}
-
-
-{# INSERT INTO office (
-    ref_key,
-    slug,
-    state,
-    state_id,
-    title,
-    seat,
-    district,
-    school_district,
-    political_scope,
-    election_scope,
-    district_type,
-    municipality,
-    county
-)
-SELECT
-    ref_key,
-    slug,
-    state,
-    state_id,
-    title,
-    seat,
-    district,
-    school_district,
-    political_scope,
-    election_scope,
-    district_type,
-    municipality,
-    county
-FROM
-    dbt_wiley.stg_office #}
