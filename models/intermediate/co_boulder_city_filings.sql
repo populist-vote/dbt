@@ -13,7 +13,6 @@ WITH transformed_filings AS (
         CASE
             WHEN office ILIKE '%City Council%' THEN 'City Council'
         END AS political_scope
-
     FROM p6t_state_co.boulder_updated_filings
 ),
 
@@ -45,6 +44,8 @@ transformed_filings_1 AS (
 
 SELECT
     tf.*,
+    p.id AS politician_id,
+    r.id AS race_id,
     tf1.politician_slug,
     tf1.politician_slug AS slug,
     tf1.election_scope,
@@ -65,3 +66,22 @@ FROM
     p6t_state_co.boulder_updated_filings AS f
 LEFT JOIN transformed_filings AS tf ON f.email = tf.email
 LEFT JOIN transformed_filings_1 AS tf1 ON tf.email = tf1.email
+LEFT JOIN public.politician AS p ON p.slug = tf1.politician_slug
+LEFT JOIN
+    office AS o
+    ON
+        o.slug
+        = SLUGIFY(
+            CONCAT(
+                'MN',
+                ' ',
+                tf.office_title,
+                ' ',
+                tf.county,
+                ' ',
+                tf.district,
+                ' ',
+                tf1.seat
+            )
+        )
+LEFT JOIN race AS r ON r.office_id = o.id
