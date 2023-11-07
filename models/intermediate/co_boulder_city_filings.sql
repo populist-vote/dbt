@@ -35,7 +35,7 @@ transformed_filings_1 AS (
             ELSE 'district'
         END AS election_scope,
         CASE
-            WHEN office ILIKE '%Mayor%' THEN 'Mayor'
+            WHEN office ILIKE '%Mayor%' THEN NULL
             ELSE 'At Large'
         END AS seat
 
