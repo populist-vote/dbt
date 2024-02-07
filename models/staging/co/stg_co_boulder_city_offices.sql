@@ -1,3 +1,4 @@
+{{ config(enabled=false) }}
 SELECT DISTINCT ON (office_slug)
     office_slug AS ref_key,
     office_slug AS slug,

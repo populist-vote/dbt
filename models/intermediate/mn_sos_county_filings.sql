@@ -147,7 +147,7 @@ WITH transformed_filings AS (
         {{ ref("src_mn_sos_candidate_filings_county_2023") }} AS f
     LEFT JOIN
         p6t_state_mn.bdry_votingdistricts AS vd
-        ON vd.countycode = f.county_id
+        ON f.county_id = vd.countycode
     GROUP BY
         f.office_title,
         f.candidate_name,
@@ -207,7 +207,7 @@ SELECT
     slugify(f.candidate_name) AS politician_slug
 FROM
     transformed_filings AS f
-LEFT JOIN politician AS p ON p.slug = f.slug
+LEFT JOIN politician AS p ON f.slug = p.slug
 LEFT JOIN
     office AS o
     ON
@@ -225,4 +225,4 @@ LEFT JOIN
                 f.seat
             )
         )
-LEFT JOIN race AS r ON r.office_id = o.id
+LEFT JOIN race AS r ON o.id = r.office_id

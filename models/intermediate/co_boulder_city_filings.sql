@@ -1,3 +1,4 @@
+{{ config(enabled=false) }}
 WITH transformed_filings AS (
     SELECT
         email AS email,

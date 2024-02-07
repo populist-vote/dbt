@@ -1,3 +1,4 @@
+{{ config(enabled=false) }}
 SELECT DISTINCT ON (office)
     'general' AS race_type,
     home_state AS state,
