@@ -30,9 +30,9 @@ clean-targets: # directories to be removed by `dbt clean`
 models:
   populist:
     intermediate:
-      +materialized: table
-    staging:
       +materialized: view
+    staging:
+      +materialized: table
     # Config indicated by + and applies to all files under models/example/
     public:
       +materialized: table

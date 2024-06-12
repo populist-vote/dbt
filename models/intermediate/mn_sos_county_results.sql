@@ -14,7 +14,7 @@ SELECT DISTINCT ON (
     race.winner_ids,
     race.num_elect
 
-FROM {{ ref('mn_sos_county_filings' ) }} AS f
+FROM {{ ref('mn_sos_fed_state_county_filings' ) }} AS f
 LEFT JOIN politician AS p ON p.slug = f.slug
 LEFT JOIN
     p6t_state_mn.results_2023_county_races AS results

@@ -8,6 +8,7 @@ SELECT DISTINCT ON (f.last_name, f.office, f.state)
     f.party,
     f.party_id,
     f.state,
+    f.incumbent_challenge,
     p.id AS politician_id,
     o.id AS office_id,
     r.id AS race_id
@@ -34,7 +35,9 @@ LEFT JOIN
                 )
         )
 LEFT JOIN race AS r
-    ON o.id = r.office_id
+    ON
+        o.id = r.office_id
+        AND f.party_id = r.party_id
 LEFT JOIN election AS e
     ON r.election_id = e.id
 WHERE

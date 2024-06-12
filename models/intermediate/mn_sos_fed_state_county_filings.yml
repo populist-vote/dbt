@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: mn_sos_county_filings
+  - name: mn_sos_fed_state_county_filings
     description: This table contains transformed data from the MN SOS website's candidate filings for county races
 
     columns:

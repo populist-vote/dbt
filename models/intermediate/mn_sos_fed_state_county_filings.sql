@@ -1,15 +1,17 @@
 WITH transformed_filings AS (
     SELECT
+        f._surrogate_key AS surrogate_key,
         office_title AS office_title_raw,
         f.office_id AS state_id,
         f.candidate_name,
-        -- Split candidate name into first, middle, last, and suffix
+        -- Split candidate name into first, middle, last, preferred and suffix
         'local' AS political_scope,
         'county' AS district_type,
         f.campaign_phone AS phone,
         f.campaign_email AS email,
         f.county_id,
         vd.countyname AS county,
+        f.candidate_name AS full_name,
         split_part(
             f.candidate_name,
             ' ',
@@ -68,8 +70,11 @@ WITH transformed_filings AS (
                 )
         END AS suffix,
         CASE
-            WHEN f.candidate_name ~ '.*".*' THEN
-                substring(f.candidate_name FROM '.*"(.*)".*')
+            WHEN f.candidate_name ~ '.*".*'
+                THEN
+                    substring(f.candidate_name FROM '.*"(.*)".*')
+            WHEN f.candidate_name ~ '.*\((.*)\).*' THEN
+                substring(f.candidate_name FROM '.*\((.*)\).*')
         END AS preferred_name,
         slugify(f.candidate_name) AS slug,
         CASE
@@ -144,11 +149,12 @@ WITH transformed_filings AS (
             '\(([^0-9]*)\)'
         ) AS race_description
     FROM
-        {{ ref("src_mn_sos_candidate_filings_county_2023") }} AS f
+        {{ ref("src_mn_sos_candidate_filings_fed_state_county_2024") }} AS f
     LEFT JOIN
         p6t_state_mn.bdry_votingdistricts AS vd
         ON f.county_id = vd.countycode
     GROUP BY
+        f._surrogate_key,
         f.office_title,
         f.candidate_name,
         f.office_id,
@@ -159,9 +165,11 @@ WITH transformed_filings AS (
 )
 
 SELECT
+    f.surrogate_key,
     f.office_title,
     f.office_title_raw,
     f.state_id,
+    f.full_name,
     f.first_name,
     f.middle_name,
     f.last_name,
@@ -207,7 +215,13 @@ SELECT
     slugify(f.candidate_name) AS politician_slug
 FROM
     transformed_filings AS f
-LEFT JOIN politician AS p ON f.slug = p.slug
+LEFT JOIN
+    politician AS p
+    ON
+        f.email = p.email
+        OR f.phone = p.phone
+        OR f.full_name = p.full_name
+        OR f.slug = p.slug
 LEFT JOIN
     office AS o
     ON
