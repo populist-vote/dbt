@@ -6,6 +6,7 @@ WITH transformed_filings AS (
         f.candidate_name,
         -- Split candidate name into first, middle, last, preferred and suffix
         'local' AS political_scope,
+        f.party_abbreviation AS party,
         'county' AS district_type,
         f.campaign_phone AS phone,
         f.campaign_email AS email,
@@ -84,13 +85,7 @@ WITH transformed_filings AS (
             ELSE
                 FALSE
         END AS is_ranked_choice,
-        CASE
-            WHEN f.office_title ILIKE '%Primary%'
-                THEN
-                    'primary'
-            ELSE
-                'general'
-        END AS race_type,
+        'primary' AS race_type, -- TODO: Update this to be dynamic
         CASE
             WHEN f.office_title ILIKE '%County Commissioner%'
                 THEN
@@ -98,9 +93,6 @@ WITH transformed_filings AS (
             ELSE
                 f.office_title
         END AS office_title,
-        -- Determine election scope based on office title and other metadata
-        -- Need to make this more general for other data inputs
-        -- TODO: Create a macro for this
         CASE
             WHEN f.office_title ILIKE '%County Commissioner%'
                 THEN
@@ -123,18 +115,22 @@ WITH transformed_filings AS (
                         'Seat ([A-Za-z0-9]+)'
                     )
         END AS seat,
-        replace(substring(
-            f.office_title,
-            'Ward [0-9]{1,3} | District [0-9]{1,3}'
-        ),
-        'District ',
-        '') AS district,
+        CASE
+            WHEN f.office_title ~ 'District ([0-9]{1,3}[A-Z]?)'
+                THEN
+                    substring(f.office_title FROM 'District ([0-9]{1,3}[A-Z]?)')
+            ELSE
+                ''
+        END AS district,
         replace(substring(
             f.office_title,
             'Elect [0-9]{1,3}'
         ),
         'Elect ',
         '') AS num_elect,
+        -- Determine election scope based on office title and other metadata
+        -- Need to make this more general for other data inputs
+        -- TODO: Create a macro for this
         CASE
             WHEN
                 f.office_title ILIKE '%Council Member%'
@@ -149,7 +145,8 @@ WITH transformed_filings AS (
             '\(([^0-9]*)\)'
         ) AS race_description
     FROM
-        {{ ref("src_mn_sos_candidate_filings_fed_state_county_2024") }} AS f
+        {{ ref("src_mn_sos_candidate_filings_primary_fed_state_county_2024") }}
+        AS f
     LEFT JOIN
         p6t_state_mn.bdry_votingdistricts AS vd
         ON f.county_id = vd.countycode
@@ -161,6 +158,7 @@ WITH transformed_filings AS (
         f.county_id,
         f.campaign_phone,
         f.campaign_email,
+        f.party_abbreviation,
         vd.countyname
 )
 
@@ -175,6 +173,7 @@ SELECT
     f.last_name,
     f.suffix,
     f.preferred_name,
+    f.party,
     f.race_type,
     p.id AS politician_id,
     o.id AS office_id,
@@ -201,7 +200,7 @@ SELECT
     ) AS phone,
     slugify(
         concat(
-            'MN',
+            'mn',
             ' ',
             f.office_title,
             ' ',

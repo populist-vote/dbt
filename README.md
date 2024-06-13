@@ -34,7 +34,8 @@ INSERT INTO politician (
     preferred_name,
     phone,
     email,
-    home_state
+    home_state,
+    party_id
 )
 SELECT
     ref_key,
@@ -47,8 +48,9 @@ SELECT
     preferred_name,
     phone,
     email,
-    home_state
-FROM dbt_models.stg_mn_sos_fed_state_county_politicians WHERE id IS NULL;
+    home_state,
+    (SELECT id FROM party WHERE fec_code = party)
+FROM dbt_wiley.stg_mn_sos_fed_state_county_politicians WHERE id IS NULL;
 ```
 
 Then `dbt run`
@@ -87,21 +89,36 @@ WHERE id IS NULL;
 Then `dbt run`
 
 ```sql
-INSERT INTO race (
-    title, slug, office_id, race_type, state, is_special_election, num_elect
-)
-SELECT *
-FROM dbt_models.stg_mn_sos_fed_state_county_races;
+INSERT INTO race (title, slug, office_id, race_type, state, is_special_election, num_elect, election_id, party_id)
+SELECT
+	filings.title,
+	filings.slug,
+	filings.office_id,
+	filings.race_type,
+	filings.state,
+	filings.is_special_election,
+	filings.num_elect,
+	(
+		SELECT
+			id
+		FROM
+			election
+		WHERE
+			slug = 'minnesota-primaries-2024'), -- Add correct slug (this is for primary races)
+    (
+        SELECT id FROM party WHERE fec_code = filings.party
+    )
+	FROM
+		dbt_models.stg_mn_sos_fed_state_county_races filings;
 ```
 
 Then `dbt run`
 
 ```sql
-
 INSERT INTO race_candidates (race_id, candidate_id)
 SELECT
     race_id,
     candidate_id
-FROM dbt_models.stg_mn_sos_county_race_candidates
+FROM dbt_models.stg_mn_sos_fed_state_county_race_candidates
 ON CONFLICT DO NOTHING;
 ```

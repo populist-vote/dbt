@@ -19,6 +19,7 @@ SELECT DISTINCT ON (office_id)
     race_type::race_type,
     state::state,
     is_special_election,
-    num_elect::integer
+    num_elect::integer,
+    party
 FROM
     {{ ref('mn_sos_fed_state_county_filings') }}

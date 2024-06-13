@@ -1,0 +1,1 @@
+SELECT {{ dbt_utils.generate_surrogate_key(['candidate_name', 'office_title', 'campaign_email']) }} as _surrogate_key, * FROM p6t_state_mn.mn_candidate_filings_primary_fed_state_county_2024 --noqa
