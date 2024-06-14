@@ -1,6 +1,5 @@
 SELECT DISTINCT ON (politician_slug)
     politician_id AS id,
-    surrogate_key AS ref_key,
     politician_slug AS slug,
     full_name,
     first_name,
