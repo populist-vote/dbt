@@ -5,6 +5,7 @@ SELECT DISTINCT ON (office_slug)
     state::state,
     state_id,
     office_title AS title,
+    office_name AS name, -- noqa: RF04
     seat,
     district,
     political_scope::political_scope,
@@ -12,4 +13,4 @@ SELECT DISTINCT ON (office_slug)
     district_type::district_type,
     county
 FROM
-    {{ ref('mn_sos_fed_state_county_filings') }}
+    {{ ref('mn_sos_fed_state_county_filings_primaries') }}

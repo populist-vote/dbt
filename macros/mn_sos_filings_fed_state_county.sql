@@ -8,7 +8,7 @@ WITH transformed_filings AS (
         -- Split candidate name into first, middle, last, preferred and suffix
         'local' AS political_scope,
         f.party_abbreviation AS party,
-        'county' AS district_type,
+        {{ get_district_type('f.office_title', 'f.county_id') }} as district_type,
         f.campaign_phone AS phone,
         f.campaign_email AS email,
         f.county_id,
@@ -72,20 +72,8 @@ WITH transformed_filings AS (
                 FALSE
         END AS is_ranked_choice,
         'primary' AS race_type, -- TODO: Update this to be dynamic
-        CASE
-            WHEN f.office_title ILIKE '%County Commissioner%'
-                THEN
-                    'County Commissioner'
-            ELSE
-                f.office_title
-        END AS office_title,
-        CASE
-            WHEN f.office_title ILIKE '%County Commissioner%'
-                THEN
-                    'County Commissioner'
-            ELSE
-                f.office_title
-        END AS office_name,
+        {{ get_office_title('f.office_title') }} as office_title,
+        {{ get_office_name('f.office_title') }} as office_name,
         coalesce(
             f.office_title ILIKE '%Special Election%',
             FALSE
@@ -100,32 +88,23 @@ WITH transformed_filings AS (
                         f.office_title,
                         'Seat ([A-Za-z0-9]+)'
                     )
-        END AS seat,
-        CASE
-            WHEN f.office_title ~ 'District ([0-9]{1,3}[A-Z]?)'
+            WHEN f.office_title ILIKE '%Court%'
                 THEN
-                    substring(f.office_title FROM 'District ([0-9]{1,3}[A-Z]?)')
+                    substring(
+                        f.office_title,
+                        'Court ([A-Za-z0-9]+)'
+                    )
             ELSE
                 ''
-        END AS district,
+        END AS seat,
+        {{ get_district('f.office_title') }} as district,
         replace(substring(
             f.office_title,
             'Elect [0-9]{1,3}'
         ),
         'Elect ',
         '') AS num_elect,
-        -- Determine election scope based on office title and other metadata
-        -- Need to make this more general for other data inputs
-        -- TODO: Create a macro for this
-        CASE
-            WHEN
-                f.office_title ILIKE '%Council Member%'
-                OR f.office_title ILIKE '%Mayor%'
-                THEN
-                    'city'
-            ELSE
-                'district'
-        END AS election_scope,
+        {{ get_election_scope('f.office_title', 'f.county_id') }} as election_scope,
         substring(
             f.office_title,
             '\(([^0-9]*)\)'
@@ -149,6 +128,7 @@ WITH transformed_filings AS (
 
 SELECT
     f.office_title,
+    f.office_name,
     f.office_title_raw,
     f.state_id,
     f.full_name,
