@@ -1,3 +1,4 @@
+{{ config(enabled=false) }}
 SELECT
     candidate_id,
     INITCAP(SPLIT_PART(name, ',', 1)) AS last_name,

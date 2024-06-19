@@ -1,3 +1,5 @@
+{{ config(enabled=false) }}
+
 SELECT DISTINCT ON (f.last_name, f.office, f.state)
     f.first_name,
     f.last_name,

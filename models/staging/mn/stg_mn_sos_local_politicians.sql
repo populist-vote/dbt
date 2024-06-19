@@ -1,3 +1,4 @@
+{{ config(enabled=false) }}
 SELECT DISTINCT ON (politician_slug)
     politician_id AS id,
     politician_slug AS ref_key,

@@ -67,7 +67,7 @@ FROM
     p6t_state_co.boulder_updated_filings AS f
 LEFT JOIN transformed_filings AS tf ON f.email = tf.email
 LEFT JOIN transformed_filings_1 AS tf1 ON tf.email = tf1.email
-LEFT JOIN public.politician AS p ON p.slug = tf1.politician_slug
+LEFT JOIN public.politician AS p ON tf1.politician_slug = p.slug
 LEFT JOIN
     office AS o
     ON
@@ -85,4 +85,4 @@ LEFT JOIN
                 tf1.seat
             )
         )
-LEFT JOIN race AS r ON r.office_id = o.id
+LEFT JOIN race AS r ON o.id = r.office_id

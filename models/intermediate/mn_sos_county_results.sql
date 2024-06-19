@@ -1,3 +1,4 @@
+{{ config(enabled=false) }}
 SELECT DISTINCT ON (
     results.candidate_name,
     results.office_name,
@@ -15,10 +16,10 @@ SELECT DISTINCT ON (
     race.num_elect
 
 FROM {{ ref('mn_sos_fed_state_county_filings' ) }} AS f
-LEFT JOIN politician AS p ON p.slug = f.slug
+LEFT JOIN politician AS p ON p.slug = f.politician_slug
 LEFT JOIN
     p6t_state_mn.results_2023_county_races AS results
-    ON SLUGIFY(results.candidate_name) = f.slug
+    ON SLUGIFY(results.candidate_name) = f.politician_slug
 LEFT JOIN
     office AS o
     ON

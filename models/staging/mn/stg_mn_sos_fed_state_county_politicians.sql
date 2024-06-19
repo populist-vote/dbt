@@ -1,6 +1,6 @@
 SELECT DISTINCT ON (politician_slug)
     politician_id AS id,
-    politician_slug AS slug,
+    filing_politician_slug AS slug,
     full_name,
     first_name,
     middle_name,
@@ -12,4 +12,4 @@ SELECT DISTINCT ON (politician_slug)
     state::state AS home_state,
     party
 FROM
-    {{ ref ('mn_sos_fed_state_county_filings') }}
+    {{ ref ('mn_sos_fed_state_county_filings_primaries') }}

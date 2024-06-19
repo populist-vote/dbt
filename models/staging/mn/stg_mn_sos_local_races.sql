@@ -1,3 +1,5 @@
+{{ config(enabled=false) }}
+
 SELECT DISTINCT ON (office_id)
     office_title_raw_no_choice AS title,
     office_id::uuid,

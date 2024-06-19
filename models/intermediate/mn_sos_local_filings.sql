@@ -1,3 +1,4 @@
+{{ config(enabled=false) }}
 WITH transformed_filings AS (
     SELECT
         office_title AS office_title_raw,

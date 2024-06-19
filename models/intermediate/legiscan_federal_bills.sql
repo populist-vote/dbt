@@ -1,3 +1,4 @@
+{{ config(enabled=false) }}
 WITH transformed_bills AS (
     SELECT
         title,

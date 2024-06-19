@@ -4,8 +4,8 @@ sources:
     schema: p6t_state_mn
     tables:
       - name: mn_candidate_filings_primary_fed_state_county_2024
-        description: Minnesotata Secretary of State Candidate Filings for 2024 - Primary Candidates
+        description: Minnesota Secretary of State Candidate Filings for 2024 - Primary Candidates
       - name: mn_candidate_filings_fed_state_county_2024
-        description: Minnesotata Secretary of State Candidate Filings for 2024 - All Candidates
+        description: Minnesota Secretary of State Candidate Filings for 2024 - All Candidates
       - name: mn_candidate_filings_local_2023
       - name: mn_candidate_filings_county_2023

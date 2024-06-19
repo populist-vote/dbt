@@ -50,7 +50,7 @@ SELECT
     email,
     home_state,
     (SELECT id FROM party WHERE fec_code = party)
-FROM dbt_wiley.stg_mn_sos_fed_state_county_politicians WHERE id IS NULL;
+FROM dbt_models.stg_mn_sos_fed_state_county_politicians WHERE id IS NULL;
 ```
 
 Then `dbt run`

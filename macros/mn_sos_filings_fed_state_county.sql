@@ -14,55 +14,7 @@ WITH transformed_filings AS (
         f.county_id,
         vd.countyname AS county,
         f.candidate_name AS full_name,
-        split_part(
-            f.candidate_name,
-            ' ',
-            1
-        ) AS first_name,
-        CASE
-            WHEN
-                split_part(
-                    f.candidate_name,
-                    ' ',
-                    3
-                ) = ''
-                THEN
-                    ''
-            ELSE
-                split_part(
-                    f.candidate_name,
-                    ' ',
-                    2
-                )
-        END AS middle_name,
-        CASE
-            WHEN split_part(f.candidate_name, ' ', 3) = ''
-                THEN split_part(f.candidate_name, ' ', 2)
-            ELSE split_part(f.candidate_name, ' ', 3)
-        END AS last_name,
-        CASE
-            WHEN
-                split_part(
-                    f.candidate_name,
-                    ' ',
-                    4
-                ) = ''
-                THEN
-                    ''
-            ELSE
-                split_part(
-                    f.candidate_name,
-                    ' ',
-                    4
-                )
-        END AS suffix,
-        CASE
-            WHEN f.candidate_name ~ '.*".*'
-                THEN
-                    substring(f.candidate_name FROM '.*"(.*)".*')
-            WHEN f.candidate_name ~ '.*\((.*)\).*' THEN
-                substring(f.candidate_name FROM '.*\((.*)\).*')
-        END AS preferred_name,
+        {{ get_name_parts('f.candidate_name') }},
         slugify(f.candidate_name) AS slug,
         CASE
             WHEN f.office_title ILIKE '%Choice%'
@@ -127,10 +79,9 @@ WITH transformed_filings AS (
 )
 
 SELECT
-    f.office_title,
-    f.office_name,
-    f.office_title_raw,
-    f.state_id,
+    p.id AS politician_id,
+    f.slug as filing_politician_slug,
+    p.slug as politician_slug,
     f.full_name,
     f.first_name,
     f.middle_name,
@@ -138,15 +89,17 @@ SELECT
     f.suffix,
     f.preferred_name,
     f.party,
+    f.office_title_raw,
+    f.office_title,
+    f.office_name,
+    f.state_id,
     f.race_type,
-    p.id AS politician_id,
     o.id AS office_id,
     r.id AS race_id,
     f.is_special_election,
     f.num_elect,
     f.county_id,
     f.is_ranked_choice,
-    p.slug,
     f.email,
     'MN' AS state,
     f.seat,
@@ -162,46 +115,18 @@ SELECT
         '',
         'g'
     ) AS phone,
-    slugify(
-        concat(
-            'mn',
-            ' ',
-            f.office_title,
-            ' ',
-            f.county,
-            ' ',
-            f.district,
-            ' ',
-            f.seat
-        )
-    ) AS office_slug,
-    slugify(f.candidate_name) AS politician_slug
+    slugify(concat('mn', ' ', f.office_name, ' ', f.county, ' ', f.district, ' ', f.seat )) AS office_slug
 FROM
     transformed_filings AS f
 LEFT JOIN
     politician AS p
-    ON
-        f.email = p.email
-        OR f.phone = p.phone
-        OR f.full_name = p.full_name
-        OR f.slug = p.slug
+    ON f.full_name = p.full_name OR
+    f.slug = p.slug
 LEFT JOIN
     office AS o
     ON
         o.slug
-        = slugify(
-            concat(
-                'MN',
-                ' ',
-                f.office_title,
-                ' ',
-                f.county,
-                ' ',
-                f.district,
-                ' ',
-                f.seat
-            )
-        )
+        = slugify(concat('mn', ' ', f.office_name, ' ', f.county, ' ', f.district, ' ', f.seat ))
 LEFT JOIN race AS r ON o.id = r.office_id
 
 {% endmacro %}

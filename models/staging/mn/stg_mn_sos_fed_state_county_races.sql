@@ -22,4 +22,4 @@ SELECT DISTINCT ON (office_id)
     num_elect::integer,
     party
 FROM
-    {{ ref('mn_sos_fed_state_county_filings') }}
+    {{ ref('mn_sos_fed_state_county_filings_primaries') }}
