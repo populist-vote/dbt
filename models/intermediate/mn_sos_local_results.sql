@@ -1,4 +1,3 @@
-
 {{ config(enabled=false) }}
 WITH local_results AS (
     SELECT * FROM p6t_state_mn.results_2023_municipal_races_and_questions

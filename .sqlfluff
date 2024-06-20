@@ -2,6 +2,7 @@
 templater = jinja
 sql_file_exts = .sql,.sql.j2,.dml,.ddl
 max_line_length = 120
+ignore = templating
 
 [sqlfluff:indentation]
 indented_joins = False

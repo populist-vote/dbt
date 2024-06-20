@@ -1,4 +1,4 @@
-{% macro process_mn_sos_candidate_filings(source_table) %}
+{% macro process_mn_sos_candidate_filings(source_table, race_type='general') %}
 
 WITH transformed_filings AS (
     SELECT
@@ -23,7 +23,7 @@ WITH transformed_filings AS (
             ELSE
                 FALSE
         END AS is_ranked_choice,
-        'primary' AS race_type, -- TODO: Update this to be dynamic
+        '{{ race_type }}' AS race_type, -- TODO: Update this to be dynamic
         {{ get_office_title('f.office_title') }} as office_title,
         {{ get_office_name('f.office_title') }} as office_name,
         coalesce(
