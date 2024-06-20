@@ -26,6 +26,7 @@ WITH transformed_filings AS (
         '{{ race_type }}' AS race_type, -- TODO: Update this to be dynamic
         {{ get_office_title('f.office_title') }} as office_title,
         {{ get_office_name('f.office_title') }} as office_name,
+        substring(office_title, '\((SSD #[0-9]+|ISD #[0-9]+)\)') AS school_district,
         coalesce(
             f.office_title ILIKE '%Special Election%',
             FALSE
@@ -104,6 +105,7 @@ SELECT
     'MN' AS state,
     f.seat,
     f.district,
+    f.school_district,
     f.political_scope,
     f.election_scope,
     f.district_type,
