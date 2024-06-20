@@ -8,7 +8,6 @@ WITH transformed_filings AS (
         -- Split candidate name into first, middle, last, preferred and suffix
         'local' AS political_scope,
         f.party_abbreviation AS party,
-        {{ get_district_type('f.office_title', 'f.county_id') }} as district_type,
         f.campaign_phone AS phone,
         f.campaign_email AS email,
         f.county_id,
@@ -31,6 +30,8 @@ WITH transformed_filings AS (
             f.office_title ILIKE '%Special Election%',
             FALSE
         ) AS is_special_election,
+
+        -- get seat
         CASE
             WHEN f.office_title ILIKE '%At Large%'
                 THEN
@@ -41,15 +42,29 @@ WITH transformed_filings AS (
                         f.office_title,
                         'Seat ([A-Za-z0-9]+)'
                     )
-            WHEN f.office_title ILIKE '%Court%'
+            WHEN f.office_title ILIKE '%District Court%' OR f.office_title ILIKE '%Supreme Court%'
                 THEN
                     substring(
                         f.office_title,
-                        'Court ([A-Za-z0-9]+)'
+                        'Court ([0-9]{1,3})'
+                    )
+            WHEN f.office_title ILIKE '%Court of Appeals%'
+                THEN
+                    substring(
+                        f.office_title,
+                        'Appeals ([0-9]{1,3})'
+                    )
+            WHEN f.office_title ILIKE '%School Board Member Position%' AND (f.office_title ILIKE '%ISD #535%' OR f.office_title ILIKE '%ISD #206%')
+                THEN
+                    substring(
+                        f.office_title,
+                        'Position ([0-9]{1,3})'
                     )
             ELSE
                 ''
         END AS seat,
+        
+        -- NUM_ELECT
         {{ get_district('f.office_title') }} as district,
         replace(substring(
             f.office_title,
@@ -57,6 +72,7 @@ WITH transformed_filings AS (
         ),
         'Elect ',
         '') AS num_elect,
+        
         {{ get_election_scope('f.office_title', 'f.county_id') }} as election_scope,
         substring(
             f.office_title,
@@ -108,7 +124,7 @@ SELECT
     f.school_district,
     f.political_scope,
     f.election_scope,
-    f.district_type,
+    {{ get_district_type('f.election_scope', 'f.office_title', 'f.county_id') }} as district_type,
     f.county,
     f.race_description,
     regexp_replace(
@@ -117,7 +133,8 @@ SELECT
         '',
         'g'
     ) AS phone,
-    slugify(concat('mn', ' ', f.office_name, ' ', f.county, ' ', f.district, ' ', f.seat )) AS office_slug
+    slugify(concat('mn', ' ', f.office_name, ' ', f.county, ' ', f.district, ' ', f.seat )) AS office_slug,
+    {{ generate_office_slug('f.office_name') }} AS office_slug_test
 FROM
     transformed_filings AS f
 LEFT JOIN

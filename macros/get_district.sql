@@ -33,12 +33,23 @@
             'Tyler District'
         WHEN {{ office_title }} ILIKE '%School Board Member Ruthton District%' THEN 
             'Ruthton District'
-        WHEN {{ office_title }} ILIKE '%School Board Member Position%' THEN 
-            REPLACE(substring({{ office_title }} FROM 'Position ([0-9]{1,3})'), 'Position', 'Seat')
+        -- ISD #861 uses Position # as District #
+        WHEN {{ office_title }} ILIKE '%School Board Member Position%' AND {{ office_title }} ILIKE '%ISD #861%' THEN 
+            substring({{ office_title }} FROM 'Position ([0-9]{1,3})')
 
-        -- Generic patterns
+        -- Hospital Districts for subdistricts in Cook County Hospital District
+        WHEN {{ office_title }} ILIKE '%Hospital District Board%' AND {{ office_title }} ILIKE '%(Cook County)%' THEN
+            substring({{ office_title }} FROM 'Board Member ([0-9]{1,3})')
+
+        -- Judicial districts
         WHEN {{ office_title }} ~* '([0-9]{1,3}(st|nd|rd|th)? District)' THEN
             substring({{ office_title }} FROM '([0-9]{1,3}(st|nd|rd|th)? District)')
+        WHEN {{ office_title }} ILIKE '%Supreme Court%' THEN
+            'Supreme Court'
+        WHEN {{ office_title }} ILIKE '%Court of Appeals%' THEN
+            'Court of Appeals'
+
+        -- Generic patterns
         WHEN {{ office_title }} ~* 'District ([0-9]{1,3}[A-Z]?)' THEN
             substring({{ office_title }} FROM 'District ([0-9]{1,3}[A-Z]?)')
 
