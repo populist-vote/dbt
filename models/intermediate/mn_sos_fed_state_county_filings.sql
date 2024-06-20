@@ -1,1 +1,1 @@
-{{ mn_sos_filings_fed_state_county('mn_candidate_filings_fed_state_county_2024') }}
+{{ process_mn_sos_candidate_filings('mn_candidate_filings_fed_state_county_2024') }}

@@ -1,4 +1,4 @@
-{% macro mn_sos_filings_fed_state_county(source_table) %}
+{% macro process_mn_sos_candidate_filings(source_table) %}
 
 WITH transformed_filings AS (
     SELECT

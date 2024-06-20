@@ -7,5 +7,6 @@ sources:
         description: Minnesota Secretary of State Candidate Filings for 2024 - Primary Candidates
       - name: mn_candidate_filings_fed_state_county_2024
         description: Minnesota Secretary of State Candidate Filings for 2024 - All Candidates
-      - name: mn_candidate_filings_local_2023
       - name: mn_candidate_filings_county_2023
+      - name: mn_candidate_filings_local_2023
+      - name: mn_candidate_filings_local_2024
