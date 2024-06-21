@@ -11,10 +11,10 @@
             CONCAT(substring({{ office_title }} FROM 'District ([0-9]{1,3}[A-Z]?)'), ' (West)')
 
         -- City Council districts with exceptions
-        WHEN {{ office_title }} ILIKE '%Council Member Ward%' THEN 
-            substring({{ office_title }} FROM '(Ward [0-9]{1,3})')
         WHEN {{ office_title }} ILIKE '%Council Member Wards%' AND {{ office_title }} ILIKE '%Red Wing%' THEN 
             substring({{ office_title }} FROM '(Wards [0-9]{1,3} & [0-9]{1,3})')
+        WHEN {{ office_title }} ILIKE '%Council Member Ward%' THEN 
+            substring({{ office_title }} FROM '(Ward [0-9A-Z]+)')
         WHEN {{ office_title }} ILIKE '%Council Member Precinct%' AND {{ office_title }} ILIKE '%Glencoe%' THEN 
             substring({{ office_title }} FROM '(Precinct [0-9]{1,3})')
         WHEN {{ office_title }} ILIKE '%Council Member Section%' AND {{ office_title }} ILIKE '%Crystal%' THEN 

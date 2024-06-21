@@ -1,4 +1,4 @@
-{% macro get_district_type(election_scope, office_title, county_id) %}
+{% macro get_district_type(office_title, county_id) %}
     CASE 
         WHEN {{ office_title }} ILIKE '%U.S. Representative%' THEN 'us_congressional'
         WHEN {{ office_title }} ILIKE '%State Senator%' THEN 'state_senate'
@@ -12,7 +12,7 @@
         WHEN {{ office_title }} ILIKE '%Council Member Section%' THEN 'city'
         WHEN {{ office_title }} ILIKE '%School Board%' THEN 'school'
         WHEN {{ office_title }} ILIKE '%District Court%' THEN 'judicial'
-        WHEN {{ office_title }} ILIKE '%Hospital District Board%' AND {{ election_scope }} = 'district' THEN 'hospital'
+        WHEN {{ office_title }} ILIKE '%Hospital District Board%' THEN 'hospital'
         ELSE NULL
     END
 {% endmacro %}
