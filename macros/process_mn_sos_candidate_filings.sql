@@ -2,11 +2,10 @@
 
 WITH transformed_filings AS (
     SELECT
-        office_title AS office_title_raw,
+        raw.office_title AS office_title_raw,
         raw.office_id AS state_id,
         raw.candidate_name,
         -- Split candidate name into first, middle, last, preferred and suffix
-        'local' AS political_scope,
         raw.party_abbreviation AS party,
         raw.campaign_phone AS phone,
         raw.campaign_email AS email,
@@ -137,7 +136,6 @@ SELECT
     f.seat,
     f.district,
     f.school_district,
-    f.political_scope,
     f.election_scope,
     f.district_type,
     f.county,
@@ -150,18 +148,18 @@ SELECT
         'g'
     ) AS phone,
     slugify(concat('mn', ' ', f.office_name, ' ', f.county, ' ', f.district, ' ', f.seat )) AS office_slug,
-    {{ generate_office_slug('f.office_name', 'f.election_scope', 'f.district_type', 'f.district', 'f.school_district', 'f.hospital_district', 'f.seat', 'f.county', 'f.municipality') }} AS office_slug_test
+    {{ generate_office_slug('f.office_name', 'f.election_scope', 'f.district_type', 'f.district', 'f.school_district', 'f.hospital_district', 'f.seat', 'f.county', 'f.municipality') }} AS office_slug_test,
+    {{ get_political_scope('f.office_name', 'f.election_scope', 'f.district_type') }} AS political_scope
 FROM
     transformed_filings AS f
 LEFT JOIN
     politician AS p
-    ON f.full_name = p.full_name OR
-    f.slug = p.slug
+    ON (f.full_name = p.full_name OR f.slug = p.slug)
 LEFT JOIN
     office AS o
     ON
         o.slug
-        = slugify(concat('mn', ' ', f.office_name, ' ', f.county, ' ', f.district, ' ', f.seat ))
+        = {{ generate_office_slug('f.office_name', 'f.election_scope', 'f.district_type', 'f.district', 'f.school_district', 'f.hospital_district', 'f.seat', 'f.county', 'f.municipality') }}
 LEFT JOIN race AS r ON o.id = r.office_id
 
 {% endmacro %}

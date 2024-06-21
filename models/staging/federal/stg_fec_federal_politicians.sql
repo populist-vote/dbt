@@ -14,7 +14,7 @@ SELECT DISTINCT ON (f.last_name, f.office, f.state)
     p.id AS politician_id,
     o.id AS office_id,
     r.id AS race_id
-FROM {{ ref('fec_federal_candidates_2024') }} AS f
+FROM {{ ref('int_fec_federal_candidates_2024') }} AS f
 LEFT JOIN
     politician AS p
     ON

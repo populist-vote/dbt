@@ -1,7 +1,5 @@
-{{ config(enabled=false) }}
 SELECT DISTINCT ON (politician_slug)
     politician_id AS id,
-    politician_slug AS ref_key,
     politician_slug AS slug,
     first_name,
     middle_name,
@@ -12,7 +10,7 @@ SELECT DISTINCT ON (politician_slug)
     email,
     state::state AS home_state
 FROM
-    {{ ref ('mn_sos_local_filings') }}
+    {{ ref ('int_mn_sos_local_filings_primaries') }}
 
 
 {# INSERT INTO politician (

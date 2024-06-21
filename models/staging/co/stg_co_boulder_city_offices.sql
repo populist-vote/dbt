@@ -12,4 +12,4 @@ SELECT DISTINCT ON (office_slug)
     'Boulder' AS municipality,
     county AS county
 FROM
-    {{ ref('co_boulder_city_filings') }}
+    {{ ref('int_co_boulder_city_filings') }}

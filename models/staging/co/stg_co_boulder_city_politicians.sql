@@ -7,4 +7,4 @@ SELECT DISTINCT ON (politician_slug)
     email,
     home_state
 FROM
-    {{ ref ('co_boulder_city_filings') }}
+    {{ ref ('int_co_boulder_city_filings') }}

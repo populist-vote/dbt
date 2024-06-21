@@ -12,4 +12,4 @@ SELECT DISTINCT ON (politician_slug)
     state::state AS home_state,
     party
 FROM
-    {{ ref ('mn_sos_fed_state_county_filings_primaries') }}
+    {{ ref ('int_mn_sos_fed_state_county_filings_primaries') }}

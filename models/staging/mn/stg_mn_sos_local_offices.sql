@@ -1,4 +1,3 @@
-{{ config(enabled=false) }}
 SELECT DISTINCT ON (office_slug)
     office_id AS id,
     office_slug AS ref_key,
@@ -15,4 +14,4 @@ SELECT DISTINCT ON (office_slug)
     municipality,
     county
 FROM
-    {{ ref('mn_sos_local_filings') }}
+    {{ ref('int_mn_sos_local_filings_primaries') }}

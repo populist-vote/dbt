@@ -1,5 +1,5 @@
 {% macro generate_office_slug(office_name, election_scope, district_type, district, school_district, hospital_district, seat, county, municipality) %}
-
+    
 CASE -- test election_scope
   -- state
   WHEN {{ election_scope }} = 'state'
@@ -41,5 +41,6 @@ CASE -- test election_scope
   ELSE
   	''
  END
+
 
 {% endmacro %}

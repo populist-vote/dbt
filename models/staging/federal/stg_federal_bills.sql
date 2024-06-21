@@ -14,4 +14,4 @@ SELECT
     slug,
     status,
     session_id
-FROM {{ ref('legiscan_federal_bills') }}
+FROM {{ ref('int_legiscan_federal_bills') }}

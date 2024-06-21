@@ -13,4 +13,4 @@ SELECT DISTINCT ON (office)
         ELSE 4
     END AS num_elect
 FROM
-    {{ ref('co_boulder_city_filings') }}
+    {{ ref('int_co_boulder_city_filings') }}
