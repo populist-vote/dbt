@@ -3,20 +3,50 @@ SELECT DISTINCT ON (office_id)
     office_id::uuid,
     slugify(
         concat(
-            'mn',
+            state,
             ' ',
-            office_title,
+            office_name,
             ' ',
             county,
             ' ',
             district,
             ' ',
-            '2024',   -- TODO: Update this to be dynamic
+            seat,
             ' ',
-            CASE WHEN race_type = 'primary' THEN 'primary' ELSE '' END
+            CASE WHEN is_special_election = TRUE THEN 'special election' ELSE '' END,
+            ' ',
+            CASE
+                WHEN race_type = 'primary' THEN concat(
+                    'primary', ' ', party
+                )
+                WHEN race_type = 'general' THEN 'general'
+                ELSE '' END,
+            ' ',
+            '2024'   -- TODO: Update this to be dynamic
         )
     ) AS slug,
-    office_name AS title,
+    concat(
+            state,
+            ' - ',
+            office_name,
+            ' - ',
+            CASE WHEN county is not null THEN concat(county,' County - ') END,
+            CASE WHEN district is not null THEN concat(district,' - ') END,
+            CASE
+                WHEN seat is NULL THEN ''
+                WHEN seat ILIKE 'At Large' THEN concat(seat,' - ')
+                ELSE concat(seat,' - ')
+            END,
+            CASE WHEN is_special_election = TRUE THEN 'Special Election - ' ELSE '' END,
+            CASE
+                WHEN race_type = 'primary' THEN concat(
+                    'Primary - ', party
+                )
+                WHEN race_type = 'general' THEN 'General'
+                ELSE '' END,
+            ' - ',
+            '2024'   -- TODO: Update this to be dynamic
+        ) AS title,
     race_type::race_type,
     state::state,
     is_special_election,

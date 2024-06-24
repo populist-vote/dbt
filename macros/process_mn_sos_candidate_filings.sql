@@ -62,7 +62,7 @@ WITH transformed_filings AS (
                         'Position ([0-9]{1,3})'
                     )
             ELSE
-                ''
+                NULL
         END AS seat,
         
         -- get District
