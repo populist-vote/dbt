@@ -1,6 +1,8 @@
 SELECT DISTINCT ON (office_id)
     race_id AS id,
     office_id::uuid,
+    
+    -- need to add municipality for local races
     slugify(
         concat(
             state,
@@ -25,6 +27,8 @@ SELECT DISTINCT ON (office_id)
             '2024'   -- TODO: Update this to be dynamic
         )
     ) AS slug,
+    
+    -- need to add municipality for local races
     concat(
             state,
             ' - ',

@@ -43,11 +43,7 @@
 
         -- Judicial districts
         WHEN {{ office_title }} ~* '([0-9]{1,3}(st|nd|rd|th)? District)' THEN
-            substring({{ office_title }} FROM '([0-9]{1,3}(st|nd|rd|th)? District)')
-        WHEN {{ office_title }} ILIKE '%Supreme Court%' THEN
-            'Supreme Court'
-        WHEN {{ office_title }} ILIKE '%Court of Appeals%' THEN
-            'Court of Appeals'
+            substring({{ office_title }} FROM '([0-9]){1,3}(st|nd|rd|th)? District')
 
         -- Generic patterns
         WHEN {{ office_title }} ~* 'District ([0-9]{1,3}[A-Z]?)' THEN
