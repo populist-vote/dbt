@@ -152,7 +152,8 @@ SELECT
         SELECT id FROM party WHERE fec_code = filings.party
     )
 	FROM
-		dbt_models.stg_mn_sos_fed_state_county_races filings;
+		dbt_models.stg_mn_sos_fed_state_county_races filings
+    WHERE id IS NULL;
 ```
 
 Then `dbt run`

@@ -9,6 +9,7 @@ WITH transformed_filings AS (
         CASE 
             WHEN raw.party_abbreviation = 'R' THEN 'REP'
             WHEN raw.party_abbreviation = 'DFL' THEN 'DEM'
+            WHEN raw.party_abbreviation = 'NP' THEN 'N'
             ELSE raw.party_abbreviation
         END AS party,
         raw.campaign_phone AS phone,
@@ -231,6 +232,8 @@ LEFT JOIN
     ON
         o.slug
         = {{ generate_office_slug('f.office_name', 'f.election_scope', 'f.district_type', 'f.district', 'f.school_district', 'f.hospital_district', 'f.seat', 'f.county', 'f.municipality') }}
-LEFT JOIN race AS r ON o.id = r.office_id AND r.election_id = (SELECT id FROM election WHERE slug = 'minnesota-primaries-2024') AND r.party_id = (SELECT id FROM party WHERE fec_code = f.party)
+LEFT JOIN race AS r ON o.id = r.office_id 
+    AND r.election_id = (SELECT id FROM election WHERE slug = 'minnesota-primaries-2024') 
+    AND (r.party_id = NULL OR  r.party_id = (SELECT id FROM party WHERE fec_code = f.party))
 
 {% endmacro %}

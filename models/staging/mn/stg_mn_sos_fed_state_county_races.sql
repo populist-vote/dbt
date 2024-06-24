@@ -1,7 +1,7 @@
 SELECT DISTINCT ON (office_id, party)
     race_id AS id,
     office_id::uuid,
-    
+
     -- need to add municipality for local races
     slugify(
         concat(
@@ -11,7 +11,11 @@ SELECT DISTINCT ON (office_id, party)
             ' ',
             CASE WHEN county IS NOT null THEN concat(county, ' County') END,
             ' ',
-            CASE WHEN district IS NOT null AND district_type != 'judicial' THEN district END,
+            CASE
+                WHEN
+                    district IS NOT null AND district_type != 'judicial'
+                    THEN district
+            END,
             ' ',
             seat,
             ' ',
@@ -31,7 +35,7 @@ SELECT DISTINCT ON (office_id, party)
             '2024'   -- TODO: Update this to be dynamic
         )
     ) AS slug,
-    
+
     -- need to add municipality for local races
     concat(
         state,
@@ -39,7 +43,11 @@ SELECT DISTINCT ON (office_id, party)
         office_name,
         ' - ',
         CASE WHEN county IS NOT null THEN concat(county, ' County - ') END,
-        CASE WHEN district IS NOT null AND district_type != 'judicial' THEN concat(district, ' - ') END,
+        CASE
+            WHEN
+                district IS NOT null AND district_type != 'judicial'
+                THEN concat(district, ' - ')
+        END,
         CASE
             WHEN seat IS null THEN ''
             WHEN seat ILIKE 'At Large' THEN concat(seat, ' - ')

@@ -16,8 +16,6 @@ SELECT DISTINCT ON (filing_politician_slug)
     residence_state,
     residence_zip,
     campaign_website,
-
-    -- Campaign address
     campaign_address,
     campaign_city,
     campaign_state,
