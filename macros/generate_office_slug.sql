@@ -27,8 +27,9 @@ CASE -- test election_scope
 	  			THEN
 					  slugify(concat('mn', ' ', {{ office_name }}, ' ', {{ school_district }}, ' ', {{ district }}, ' ', {{ seat }} ))
 			WHEN {{ district_type }} = 'judicial'
+				-- matches District Court Judges - don't need district in slug because it's in the name (e.g. Judge - 6th District)
 				THEN
-					  slugify(concat('mn', ' ', {{ office_name }}, ' ', {{ district }}, ' ', {{ seat }} ))
+					  slugify(concat('mn', ' ', {{ office_name }}, ' ', {{ seat }} ))
 			WHEN {{ district_type }} = 'hospital'
 	  			THEN
 	  				slugify(concat('mn', ' ', {{ office_name }}, ' ', hospital_district, ' ',{{ district }}, ' ', {{ seat }} ))
