@@ -54,6 +54,6 @@
             substring({{ office_title }} FROM 'District ([0-9]{1,3}[A-Z]?)')
 
         ELSE
-            ''
+            NULL
     END
 {% endmacro %}

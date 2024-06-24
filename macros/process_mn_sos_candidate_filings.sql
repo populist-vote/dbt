@@ -33,7 +33,7 @@ WITH transformed_filings AS (
         -- get Seat
         CASE
             WHEN raw.office_title ILIKE 'U.S. Senator'
-                THEN '2'
+                THEN '1'
             WHEN raw.office_title ILIKE '%At Large%'
                 THEN
                     'At Large'
@@ -62,7 +62,7 @@ WITH transformed_filings AS (
                         'Position ([0-9]{1,3})'
                     )
             ELSE
-                ''
+                NULL
         END AS seat,
         
         -- get District
