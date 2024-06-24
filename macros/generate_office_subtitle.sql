@@ -1,5 +1,37 @@
 {% macro generate_office_subtitle(state, office_name, election_scope, district_type, district, school_district, hospital_district, seat, county, municipality) %}
 
+concat(
+        	CASE WHEN state,
+            ' - ',
+            office_name,
+            ' - ',
+            CASE WHEN county is not null THEN concat(county,' County - ') END,
+            CASE WHEN district is not null THEN concat(district,' - ') END,
+            CASE
+                WHEN seat is NULL THEN ''
+                WHEN seat ILIKE 'At Large' THEN concat(seat,' - ')
+                ELSE concat(seat,' - ')
+            END,
+            CASE WHEN is_special_election = TRUE THEN 'Special Election - ' ELSE '' END,
+            CASE
+                WHEN race_type = 'primary' THEN concat(
+                    'Primary - ', party
+                )
+                WHEN race_type = 'general' THEN 'General'
+                ELSE '' END,
+            ' - ',
+            '2024'   -- TODO: Update this to be dynamic
+        ) AS title,
+
+
+
+
+
+
+
+
+
+
 DECLARE @subtitle AS TEXT = ''
 
 CASE -- test election_scope

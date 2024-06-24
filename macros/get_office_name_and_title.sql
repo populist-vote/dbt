@@ -7,9 +7,11 @@ CASE
   WHEN {{ office_title }} ILIKE '%Soil and Water Supervisor%' THEN 'Soil and Water Supervisor'
   WHEN {{ office_title }} ILIKE '%County Park Commissioner%' THEN 'County Park Commissioner'
   WHEN {{ office_title }} ILIKE '%County Commissioner%' THEN 'County Commissioner'
-  WHEN {{ office_title }} ILIKE '%Chief Justice - Supreme Court%' THEN 'Chief Justice'
-  WHEN {{ office_title }} ILIKE '%Associate Justice - Supreme Court%' THEN 'Associate Justice'
-  WHEN {{ office_title }} ILIKE '%Judge%' THEN 'Judge'
+  WHEN {{ office_title }} ILIKE '%Chief Justice - Supreme Court%' THEN 'Chief Justice - Supreme Court'
+  WHEN {{ office_title }} ILIKE '%Associate Justice - Supreme Court%' THEN 'Associate Justice - Supreme Court'
+  WHEN {{ office_title }} ILIKE '%Judge - Court of Appeals%' THEN 'Judge - Court of Appeals'
+  WHEN {{ office_title }} ~* '(Judge - [0-9]{1,3}(st|nd|rd|th)? District)' THEN
+    substring({{ office_title }} FROM '(Judge - [0-9]{1,3}(st|nd|rd|th)? District)')
 
   -- Local Offices
   WHEN {{ office_title }} ILIKE '%Council Member%' THEN 'City Council Member'
@@ -39,9 +41,11 @@ CASE
   WHEN {{ office_title }} ILIKE '%Soil and Water Supervisor%' THEN 'Soil and Water Supervisor'
   WHEN {{ office_title }} ILIKE '%County Park Commissioner%' THEN 'County Park Commissioner'
   WHEN {{ office_title }} ILIKE '%County Commissioner%' THEN 'County Commissioner'
-  WHEN {{ office_title }} ILIKE '%Chief Justice - Supreme Court%' THEN 'Chief Justice'
-  WHEN {{ office_title }} ILIKE '%Associate Justice - Supreme Court%' THEN 'Associate Justice'
-  WHEN {{ office_title }} ILIKE '%Judge%' THEN 'Judge'
+  WHEN {{ office_title }} ILIKE '%Chief Justice - Supreme Court%' THEN 'Chief Justice - Supreme Court'
+  WHEN {{ office_title }} ILIKE '%Associate Justice - Supreme Court%' THEN 'Associate Justice - Supreme Court'
+  WHEN {{ office_title }} ILIKE '%Judge - Court of Appeals%' THEN 'Judge - Court of Appeals'
+  WHEN {{ office_title }} ~* '(Judge - [0-9]{1,3}(st|nd|rd|th)? District)' THEN
+    substring({{ office_title }} FROM '(Judge - [0-9]{1,3}(st|nd|rd|th)? District)')
 
   -- Local Offices
   WHEN {{ office_title }} ILIKE '%Sanitary District Board Member%' THEN 'Sanitary District Board'
