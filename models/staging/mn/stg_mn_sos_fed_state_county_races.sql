@@ -1,4 +1,5 @@
 SELECT DISTINCT ON (office_id)
+    race_id AS id,
     office_id::uuid,
     slugify(
         concat(
@@ -15,7 +16,7 @@ SELECT DISTINCT ON (office_id)
             CASE WHEN race_type = 'primary' THEN 'primary' ELSE '' END
         )
     ) AS slug,
-    office_title_raw AS title,
+    office_name AS title,
     race_type::race_type,
     state::state,
     is_special_election,

@@ -23,8 +23,38 @@ You can use the command `dbt debug` to test your connection.
 To create the required records from new MN candidate filing source data, we need to run the following SQL:
 
 ```sql
+WITH residence_address AS (
+    INSERT INTO address (line_1, city, state, postal_code, country)
+    SELECT
+        residence_street_address,
+        residence_city,
+        residence_state,
+        residence_zip,
+        'USA'
+    FROM dbt_models.stg_mn_sos_fed_state_county_politicians
+    WHERE residence_street_address IS NOT NULL
+    AND residence_city IS NOT NULL
+    AND residence_city IS NOT NULL
+    AND residence_state IS NOT NULL
+    AND residence_zip IS NOT NULL
+    RETURNING id, line_1, city, state, postal_code, country
+),
+campaign_address AS (
+    INSERT INTO address (line_1, city, state, postal_code, country)
+    SELECT
+        campaign_address,
+        campaign_city,
+        campaign_state,
+        campaign_zip,
+        'USA'
+    FROM dbt_models.stg_mn_sos_fed_state_county_politicians
+    WHERE campaign_address IS NOT NULL
+    AND campaign_city IS NOT NULL
+    AND campaign_state IS NOT NULL
+    AND campaign_zip IS NOT NULL
+    RETURNING id, line_1, city, state, postal_code, country
+)
 INSERT INTO politician (
-    ref_key,
     slug,
     full_name,
     first_name,
@@ -35,29 +65,43 @@ INSERT INTO politician (
     phone,
     email,
     home_state,
-    party_id
+    party_id,
+    campaign_website_url,
+    residence_address_id,
+    campaign_address_id
 )
 SELECT
-    ref_key,
-    slug,
-    full_name,
-    first_name,
-    middle_name,
-    last_name,
-    suffix,
-    preferred_name,
-    phone,
-    email,
-    home_state,
-    (SELECT id FROM party WHERE fec_code = party)
-FROM dbt_models.stg_mn_sos_fed_state_county_politicians WHERE id IS NULL;
+    p.slug,
+    p.full_name,
+    p.first_name,
+    p.middle_name,
+    p.last_name,
+    p.suffix,
+    p.preferred_name,
+    p.phone,
+    p.email,
+    p.home_state,
+    party.id AS party_id,
+    p.campaign_website,
+    ra.id AS residence_address_id,
+    ca.id AS campaign_address_id
+FROM dbt_models.stg_mn_sos_fed_state_county_politicians p
+LEFT JOIN address ra ON p.residence_street_address = ra.line_1
+    AND p.residence_city = ra.city
+    AND p.residence_state = ra.state
+    AND p.residence_zip = ra.postal_code
+LEFT JOIN address ca ON p.campaign_address = ca.line_1
+    AND p.campaign_city = ca.city
+    AND p.campaign_state = ca.state
+    AND p.campaign_zip = ca.postal_code
+LEFT JOIN party ON p.party = party.fec_code
+WHERE p.id IS NULL;
 ```
 
 Then `dbt run`
 
 ```sql
 INSERT INTO office (
-    ref_key,
     slug,
     state,
     state_id,
@@ -70,7 +114,6 @@ INSERT INTO office (
     county
 )
 SELECT
-    ref_key,
     slug,
     state,
     state_id,

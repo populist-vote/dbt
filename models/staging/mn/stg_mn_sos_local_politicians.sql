@@ -1,6 +1,6 @@
-SELECT DISTINCT ON (politician_slug)
+SELECT DISTINCT ON (filing_politician_slug)
     politician_id AS id,
-    politician_slug AS slug,
+    filing_politician_slug AS slug,
     first_name,
     middle_name,
     last_name,
@@ -8,7 +8,18 @@ SELECT DISTINCT ON (politician_slug)
     preferred_name,
     phone,
     email,
-    state::state AS home_state
+    campaign_website,
+    state::state AS home_state,
+    residence_street_address,
+    residence_city,
+    residence_state,
+    residence_zip,
+
+    -- Campaign address
+    campaign_address,
+    campaign_city,
+    campaign_state,
+    campaign_zip
 FROM
     {{ ref ('int_mn_sos_local_filings_primaries') }}
 

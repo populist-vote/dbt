@@ -9,6 +9,7 @@ WITH transformed_filings AS (
         raw.party_abbreviation AS party,
         raw.campaign_phone AS phone,
         raw.campaign_email AS email,
+        raw.campaign_website AS campaign_website,
         raw.county_id,
         vd.countyname AS county,
         raw.candidate_name AS full_name,
@@ -31,6 +32,8 @@ WITH transformed_filings AS (
 
         -- get Seat
         CASE
+            WHEN raw.office_title ILIKE 'U.S. Senator'
+                THEN '2'
             WHEN raw.office_title ILIKE '%At Large%'
                 THEN
                     'At Large'
@@ -91,7 +94,51 @@ WITH transformed_filings AS (
         ) AS race_description,
 
         -- get Municipality
-        {{ get_municipality('raw.office_title', 'election_scope', 'district_type') }} AS municipality
+        {{ get_municipality('raw.office_title', 'election_scope', 'district_type') }} AS municipality,
+
+        -- Candidate residence address
+        CASE
+            WHEN raw.residence_street_address IN ('PRIVATE', 'NOT REQUIRED')
+            THEN NULL
+            ELSE raw.residence_street_address
+        END AS residence_street_address,
+        CASE
+            WHEN raw.residence_street_address IN ('PRIVATE', 'NOT REQUIRED')
+            THEN NULL
+            ELSE raw.residence_city
+        END AS residence_city,
+        CASE
+            WHEN raw.residence_street_address IN ('PRIVATE', 'NOT REQUIRED')
+            THEN NULL
+            ELSE raw.residence_state
+        END AS residence_state,
+        CASE
+            WHEN raw.residence_street_address IN ('PRIVATE', 'NOT REQUIRED')
+            THEN NULL
+            ELSE raw.residence_zip
+        END AS residence_zip,
+
+        -- Campaign address
+        CASE
+            WHEN raw.campaign_address IN ('PRIVATE', 'NOT REQUIRED')
+            THEN NULL
+            ELSE raw.campaign_address
+        END AS campaign_address,
+        CASE
+            WHEN raw.campaign_address IN ('PRIVATE', 'NOT REQUIRED')
+            THEN NULL
+            ELSE raw.campaign_city
+        END AS campaign_city,
+        CASE
+            WHEN raw.campaign_address IN ('PRIVATE', 'NOT REQUIRED')
+            THEN NULL
+            ELSE raw.campaign_state
+        END AS campaign_state,
+        CASE
+            WHEN raw.campaign_address IN ('PRIVATE', 'NOT REQUIRED')
+            THEN NULL
+            ELSE raw.campaign_zip
+        END AS campaign_zip
     FROM
         {{ source("mn_sos", source_table) }}
         AS raw
@@ -105,8 +152,17 @@ WITH transformed_filings AS (
         raw.county_id,
         raw.campaign_phone,
         raw.campaign_email,
+        raw.campaign_website,
         raw.party_abbreviation,
-        vd.countyname
+        vd.countyname,
+        raw.residence_street_address,
+        raw.residence_city,
+        raw.residence_state,
+        raw.residence_zip,
+        raw.campaign_address,
+        raw.campaign_city,
+        raw.campaign_state,
+        raw.campaign_zip
 )
 
 SELECT
@@ -132,6 +188,7 @@ SELECT
     f.county_id,
     f.is_ranked_choice,
     f.email,
+    f.campaign_website,
     'MN' AS state,
     f.seat,
     f.district,
@@ -147,9 +204,18 @@ SELECT
         '',
         'g'
     ) AS phone,
-    slugify(concat('mn', ' ', f.office_name, ' ', f.county, ' ', f.district, ' ', f.seat )) AS office_slug,
-    {{ generate_office_slug('f.office_name', 'f.election_scope', 'f.district_type', 'f.district', 'f.school_district', 'f.hospital_district', 'f.seat', 'f.county', 'f.municipality') }} AS office_slug_test,
-    {{ get_political_scope('f.office_name', 'f.election_scope', 'f.district_type') }} AS political_scope
+    {{ generate_office_slug('f.office_name', 'f.election_scope', 'f.district_type', 'f.district', 'f.school_district', 'f.hospital_district', 'f.seat', 'f.county', 'f.municipality') }} AS office_slug,
+    {{ get_political_scope('f.office_name', 'f.election_scope', 'f.district_type') }} AS political_scope,
+    residence_street_address,
+    residence_city,
+    residence_state,
+    residence_zip,
+
+    -- Campaign address
+    campaign_address,
+    campaign_city,
+    campaign_state,
+    campaign_zip
 FROM
     transformed_filings AS f
 LEFT JOIN

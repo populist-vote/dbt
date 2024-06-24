@@ -1,6 +1,7 @@
 {% macro get_political_scope(office_name, election_scope, district_type) %}
     CASE 
         WHEN {{ election_scope }} = 'national' THEN 'federal'
+        WHEN {{ office_name }} ILIKE 'U.S. Senate' THEN 'federal'
         WHEN {{ election_scope }} = 'state' THEN 'state'
         WHEN {{ election_scope }} = 'district' THEN
             CASE
