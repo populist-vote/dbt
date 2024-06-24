@@ -7,7 +7,7 @@ SELECT DISTINCT ON (office_id)
             ' ',
             office_name,
             ' ',
-            county,
+            CASE WHEN county is not null THEN concat(county,' County') END,
             ' ',
             district,
             ' ',
