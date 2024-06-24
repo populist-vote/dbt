@@ -11,7 +11,7 @@ SELECT DISTINCT ON (office_id, party)
             ' ',
             CASE WHEN county IS NOT null THEN concat(county, ' County') END,
             ' ',
-            district,
+            CASE WHEN district IS NOT null AND district_type != 'judicial' THEN district END,
             ' ',
             seat,
             ' ',
@@ -39,7 +39,7 @@ SELECT DISTINCT ON (office_id, party)
         office_name,
         ' - ',
         CASE WHEN county IS NOT null THEN concat(county, ' County - ') END,
-        CASE WHEN district IS NOT null THEN concat(district, ' - ') END,
+        CASE WHEN district IS NOT null AND district_type != 'judicial' THEN concat(district, ' - ') END,
         CASE
             WHEN seat IS null THEN ''
             WHEN seat ILIKE 'At Large' THEN concat(seat, ' - ')
