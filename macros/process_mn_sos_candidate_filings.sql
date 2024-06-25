@@ -100,7 +100,7 @@ WITH transformed_filings AS (
 
         -- get Municipality
         {{ get_municipality('raw.office_title', 'election_scope', 'district_type') }} AS municipality,
-
+        
         -- Candidate residence address
         CASE
             WHEN raw.residence_street_address IN ('PRIVATE', 'NOT REQUIRED')
@@ -211,6 +211,7 @@ SELECT
         'g'
     ) AS phone,
     {{ generate_office_slug('f.office_name', 'f.election_scope', 'f.district_type', 'f.district', 'f.school_district', 'f.hospital_district', 'f.seat', 'f.county', 'f.municipality') }} AS office_slug,
+    {{ generate_office_subtitle('f.state_id', 'f.office_name', 'f.election_scope', 'f.district_type', 'f.district', 'f.school_district', 'f.hospital_district', 'f.seat', 'f.county', 'f.municipality') }} AS office_subtitle,
     {{ get_political_scope('f.office_name', 'f.election_scope', 'f.district_type') }} AS political_scope,
     residence_street_address,
     residence_city,
