@@ -32,7 +32,7 @@ CASE -- test election_scope
 					  slugify(concat('mn', ' ', {{ office_name }}, ' ', {{ seat }} ))
 			WHEN {{ district_type }} = 'hospital'
 	  			THEN
-	  				slugify(concat('mn', ' ', {{ office_name }}, ' ', hospital_district, ' ',{{ district }}, ' ', {{ seat }} ))
+	  				slugify(concat('mn', ' ', {{ office_name }}, ' ', {{ hospital_district }}, ' ',{{ district }}, ' ', {{ seat }} ))
 	  	WHEN {{ district_type }} = 'soil_and_water'
 	  			THEN
 	  				slugify(concat('mn', ' ', {{ office_name }}, ' ', {{ county }}, ' county ', {{ district }}, ' ', {{ seat }} ))
