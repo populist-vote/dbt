@@ -149,7 +149,7 @@ WITH transformed_filings AS (
         AS raw
     LEFT JOIN
         p6t_state_mn.bdry_votingdistricts AS vd
-        ON raw.county_id = vd.countycode
+        ON REGEXP_REPLACE(raw.county_id, '^0+', '') = vd.countycode
     GROUP BY
         raw.office_title,
         raw.candidate_name,

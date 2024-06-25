@@ -1,3 +1,4 @@
+{{ config(enabled=false) }}
 SELECT DISTINCT ON (office_slug)
     office_id AS id,
     office_slug AS slug,
