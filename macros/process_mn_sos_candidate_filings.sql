@@ -77,6 +77,16 @@ WITH transformed_filings AS (
         substring(office_title, '\((SSD #[0-9]+|ISD #[0-9]+)\)') as school_district,
 
         -- get Hospital District
+        CASE
+            WHEN raw.office_title ~* 'Hospital District Board Member ([0-9]{1,2})' THEN
+                substring(raw.office_title from '\(([^)]+)\)')
+            WHEN raw.office_title ILIKE '%Hospital District Board Member at Large Koochiching%' THEN
+                'Northern Itasca - Koochiching'
+            WHEN raw.office_title ILIKE '%Hospital District Board Member at Large Itasca%' THEN
+                'Northern Itasca - Itasca'
+            WHEN raw.office_title ILIKE '%Hospital District Board Member at Large%' THEN
+                substring(raw.office_title from '\(([^)]+)\)')
+        END AS hospital_district,
 
         -- get NUM_ELECT
         replace(substring(
@@ -100,7 +110,7 @@ WITH transformed_filings AS (
 
         -- get Municipality
         {{ get_municipality('raw.office_title', 'election_scope', 'district_type') }} AS municipality,
-
+        
         -- Candidate residence address
         CASE
             WHEN raw.residence_street_address IN ('PRIVATE', 'NOT REQUIRED')
@@ -199,6 +209,7 @@ SELECT
     f.seat,
     f.district,
     f.school_district,
+    f.hospital_district,
     f.election_scope,
     f.district_type,
     f.county,
@@ -211,9 +222,10 @@ SELECT
         'g'
     ) AS phone,
     {{ generate_office_slug('f.office_name', 'f.election_scope', 'f.district_type', 'f.district', 'f.school_district', 'f.hospital_district', 'f.seat', 'f.county', 'f.municipality') }} AS office_slug,
+    {{ generate_office_subtitle('f.office_name', 'f.election_scope', 'f.district_type', 'f.district', 'f.school_district', 'f.hospital_district', 'f.seat', 'f.county', 'f.municipality') }} AS office_subtitle,
     {{ get_political_scope('f.office_name', 'f.election_scope', 'f.district_type') }} AS political_scope,
-    {{ generate_race_slug('f.office_name', 'f.county', 'f.district', 'f.district_type', 'f.seat', 'f.is_special_election', 'f.race_type', 'f.party', '2024') }} as race_slug,
-    {{ generate_race_title('f.office_name', 'f.county', 'f.district', 'f.district_type', 'f.seat', 'f.is_special_election', 'f.race_type', 'f.party', '2024') }} as race_title,
+    {{ generate_race_slug('f.office_name', 'f.election_scope', 'f.district_type', 'f.district', 'f.school_district', 'f.hospital_district', 'f.seat', 'f.county', 'f.municipality', 'f.is_special_election', 'f.race_type', 'f.party', '2024') }} as race_slug,
+    {{ generate_race_title('f.office_name', 'f.election_scope', 'f.district_type', 'f.district', 'f.school_district', 'f.hospital_district', 'f.seat', 'f.county', 'f.municipality', 'f.is_special_election', 'f.race_type', 'f.party', '2024') }} as race_title,
     residence_street_address,
     residence_city,
     residence_state,

@@ -5,6 +5,8 @@ SELECT DISTINCT ON (office_slug)
     state::state,
     state_id,
     office_title AS title,
+    office_name AS name, -- noqa: RF04
+    office_subtitle,
     seat,
     district,
     school_district,
