@@ -157,7 +157,13 @@ concat(
     CASE
         WHEN {{ race_type }} = 'primary'
             THEN concat(
-                'Primary - ', {{ party }}
+                'Primary',
+                CASE
+                    WHEN {{ party }} = 'N' THEN ' - Nonpartisan'
+                    WHEN {{ party }} = 'REP' THEN ' - Republican'
+                    WHEN {{ party }} = 'DEM' THEN ' - Democratic'
+                    ELSE ''
+                END
             )
         WHEN {{ race_type }} = 'general' THEN 'General'
         ELSE ''
