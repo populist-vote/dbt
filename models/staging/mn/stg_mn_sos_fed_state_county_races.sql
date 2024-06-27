@@ -1,5 +1,5 @@
 {{ config(enabled=false) }}
-SELECT DISTINCT ON (office_id, party)
+SELECT DISTINCT ON (office_id)
     race_id AS id,
     office_id::uuid,
     race_slug AS slug,
@@ -10,4 +10,4 @@ SELECT DISTINCT ON (office_id, party)
     is_special_election,
     num_elect::integer
 FROM
-    {{ ref('int_mn_sos_fed_state_county_filings_primaries') }}
+    {{ ref('int_mn_sos_fed_state_county_filings') }}

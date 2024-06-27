@@ -1,5 +1,5 @@
 {% macro generate_race_title(office_name, election_scope, district_type, district, school_district, hospital_district, seat, county, municipality, is_special_election, race_type, party, year) %}
-
+    
 concat(
     'MN',
     ' - ',
@@ -162,7 +162,7 @@ concat(
                     WHEN {{ party }} = 'N' THEN ' - Nonpartisan'
                     WHEN {{ party }} = 'REP' THEN ' - Republican'
                     WHEN {{ party }} = 'DEM' THEN ' - Democratic'
-                    ELSE ''
+                    ELSE {{ party }}
                 END
             )
         WHEN {{ race_type }} = 'general' THEN 'General'
@@ -171,6 +171,12 @@ concat(
     ' - ',
     {{ year }}   
 )
+
+
+
+
+
+
 
 
 

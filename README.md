@@ -22,6 +22,30 @@ You can use the command `dbt debug` to test your connection.
 
 To create the required records from new MN candidate filing source data, we need to run the following SQL:
 
+`dbt run`
+
+Check for duplicated politicians and amend the possible matches:
+
+```sql
+SELECT
+    t1.id AS matched_politician_id,
+    t1.slug AS filing_slug,
+    t2.id AS existing_politician_id,
+    t2.slug AS existing_politician_slug,
+    SIMILARITY(t1.slug, t2.slug) AS similarity
+FROM
+     dbt_models.stg_mn_sos_fed_state_county_politicians t1
+JOIN
+    politician t2
+ON
+    SIMILARITY(t1.slug, t2.slug) > 0.6
+WHERE t1.id IS NULL
+ORDER BY
+    t1.id, similarity DESC;
+```
+
+Insert the staged politicians into the politician table:
+
 ```sql
 WITH residence_address AS (
     INSERT INTO address (line_1, city, state, postal_code, country)
@@ -98,8 +122,6 @@ LEFT JOIN party ON p.party = party.fec_code
 WHERE p.id IS NULL;
 ```
 
-Then `dbt run`
-
 ```sql
 INSERT INTO office (
     slug,
@@ -147,7 +169,7 @@ SELECT
 		FROM
 			election
 		WHERE
-			slug = 'minnesota-primaries-2024'), -- Add correct slug (this is for primary races)
+			slug = 'general-election-2024'), -- Ensure correct election slug
     (
         SELECT id FROM party WHERE fec_code = filings.party
     )

@@ -1,4 +1,5 @@
 SELECT DISTINCT ON (office_id)
+    race_id AS id,
     race_title AS title,
     office_id::uuid,
     party,
@@ -8,4 +9,4 @@ SELECT DISTINCT ON (office_id)
     num_elect::integer,
     race_slug AS slug
 FROM
-    {{ ref('int_mn_sos_local_filings_primaries') }}
+    {{ ref('int_mn_sos_local_filings') }}
