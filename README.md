@@ -133,7 +133,8 @@ INSERT INTO office (
     political_scope,
     election_scope,
     district_type,
-    county
+    county,
+    municipality
 )
 SELECT
     slug,
@@ -145,7 +146,8 @@ SELECT
     political_scope,
     election_scope,
     district_type,
-    county
+    county,
+    municipality
 FROM
     dbt_models.stg_mn_sos_fed_state_county_offices
 WHERE id IS NULL;

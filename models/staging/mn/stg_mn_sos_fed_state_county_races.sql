@@ -1,4 +1,4 @@
-{{ config(enabled=false) }}
+{{ config(enabled=true) }}
 SELECT DISTINCT ON (office_id)
     race_id AS id,
     office_id::uuid,
