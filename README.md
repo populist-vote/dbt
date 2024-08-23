@@ -44,6 +44,25 @@ ORDER BY
     t1.id, similarity DESC;
 ```
 
+Update existing politicians with new information:
+
+```sql
+UPDATE politician
+SET
+    email = f.email,
+    phone = f.phone,
+    campaign_website_url = f.campaign_website,
+    updated_at = NOW()
+FROM dbt_models.stg_mn_sos_local_politicians f
+WHERE
+    politician.slug = f.slug
+    AND (
+        politician.email IS DISTINCT FROM f.email
+        OR politician.phone IS DISTINCT FROM f.phone
+        OR politician.campaign_website_url IS DISTINCT FROM f.campaign_website
+    );
+```
+
 Insert the staged politicians into the politician table:
 
 ```sql
@@ -128,6 +147,7 @@ INSERT INTO office (
     state,
     state_id,
     title,
+    subtitle,
     seat,
     district,
     political_scope,
@@ -141,6 +161,7 @@ SELECT
     state,
     state_id,
     title,
+    subtitle,
     seat,
     district,
     political_scope,

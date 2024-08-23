@@ -181,7 +181,7 @@ WITH transformed_filings AS (
 
 SELECT
     p.id AS politician_id,
-    f.slug as filing_politician_slug,
+    {{ get_unique_politician_slug('p.id', 'f.slug') }} as filing_politician_slug,
     p.slug as politician_slug,
     f.full_name,
     f.first_name,
@@ -237,9 +237,17 @@ SELECT
     campaign_zip
 FROM
     transformed_filings AS f
-LEFT JOIN
-    politician AS p
-    ON (f.phone IS NOT NULL AND f.phone <> '000' AND f.phone = p.phone) OR f.full_name = p.full_name OR f.slug = p.slug OR f.email = p.email
+LEFT JOIN politician AS p
+    ON (
+        (f.email IS NOT NULL AND LOWER(f.email) = LOWER(p.email) AND similarity(f.full_name, p.full_name) > 0.6)
+        OR (f.phone IS NOT NULL AND f.phone <> '000' AND f.phone = p.phone AND similarity(f.full_name, p.full_name) > 0.6)
+        OR (f.full_name IS NOT NULL AND f.full_name = p.full_name AND f.email = p.email)
+        OR (
+            f.slug IS NOT NULL 
+            AND REGEXP_REPLACE(f.slug, '-[0-9]+$', '') = REGEXP_REPLACE(p.slug, '-[0-9]+$', '') 
+            AND f.email = p.email
+        )
+    )
 LEFT JOIN
     office AS o
     ON
