@@ -1,4 +1,3 @@
-{{ config(enabled=true) }}
 WITH filing_offices AS (
     {{ select_filing_offices('int_mn_sos_local_filings') }}
 )

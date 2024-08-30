@@ -159,6 +159,7 @@ WITH transformed_filings AS (
     LEFT JOIN
         p6t_state_mn.bdry_votingdistricts AS vd
         ON REGEXP_REPLACE(raw.county_id, '^0+', '') = vd.countycode
+    WHERE raw.office_title != 'U.S. President & Vice President'
     GROUP BY
         raw.office_title,
         raw.candidate_name,
@@ -237,15 +238,25 @@ SELECT
     campaign_zip
 FROM
     transformed_filings AS f
+LEFT JOIN address ra ON f.residence_street_address = ra.line_1
+    AND f.residence_city = ra.city
+    AND f.residence_state = ra.state
+    AND f.residence_zip = ra.postal_code
+LEFT JOIN address ca ON f.campaign_address = ca.line_1
+    AND f.campaign_city = ca.city
+    AND f.campaign_state = ca.state
+    AND f.campaign_zip = ca.postal_code
 LEFT JOIN politician AS p
+   -- TODO: check residential address and campaign address to help determine if the politician already exists
     ON (
         (f.email IS NOT NULL AND LOWER(f.email) = LOWER(p.email) AND similarity(f.full_name, p.full_name) > 0.6)
         OR (f.phone IS NOT NULL AND f.phone <> '000' AND f.phone = p.phone AND similarity(f.full_name, p.full_name) > 0.6)
-        OR (f.full_name IS NOT NULL AND f.full_name = p.full_name AND f.email = p.email)
+        OR (ra.id IS NOT NULL AND ra.id = p.residence_address_id AND similarity(f.full_name, p.full_name) > 0.6)
+        OR (ca.id IS NOT NULL AND ca.id = p.campaign_address_id AND similarity(f.full_name, p.full_name) > 0.6)
+        OR (f.full_name IS NOT NULL AND f.full_name = p.full_name)
         OR (
             f.slug IS NOT NULL 
             AND REGEXP_REPLACE(f.slug, '-[0-9]+$', '') = REGEXP_REPLACE(p.slug, '-[0-9]+$', '') 
-            AND f.email = p.email
         )
     )
 LEFT JOIN

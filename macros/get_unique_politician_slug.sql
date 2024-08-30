@@ -18,7 +18,8 @@
                 ), 0
             ) + 1
         
-        -- If neither ID nor slug exists, return the slug
+        -- If neither ID nor slug exists, return the slug 
+        -- TODO check all the source slugs to make sure it's unique b/c we use a distinct(slug) to stage the politicians
         ELSE
             {{ slug }}
     END

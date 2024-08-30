@@ -31,8 +31,25 @@ models:
   populist:
     intermediate:
       +materialized: view
+      mn:
+        fed_state_county:
+          +enabled: true
+        local:
+          +enabled: false
+      federal:
+        +enabled: false
     staging:
       +materialized: table
+
+      co:
+        +enabled: false
+      mn:
+        fed_state_county:
+          +enabled: true
+        local:
+          +enabled: false
+      federal:
+        +enabled: false
     # Config indicated by + and applies to all files under models/example/
     public:
       +materialized: table
